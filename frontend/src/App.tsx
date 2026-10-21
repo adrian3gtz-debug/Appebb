@@ -30,61 +30,55 @@ function App() {
   }, [])
 
   const statusText = {
-    checking: 'Checking connection',
-    connected: 'Backend connected',
-    unavailable: 'Backend unavailable',
+    checking: 'Comprobando conexión',
+    connected: 'API conectada',
+    unavailable: 'API sin conexión',
   }[connection]
 
   return (
-    <main className="min-h-screen bg-[#07121b] text-slate-100">
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-8 sm:px-10">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
+    <main className="min-h-screen bg-[#f7f8f5] text-[#19332a]">
+      <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-6 sm:px-10">
+        <header className="flex flex-wrap items-center justify-between gap-5 border-b border-[#dce5db] py-7">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl border border-emerald-400/30 bg-emerald-400/10 text-xl font-black text-emerald-300" aria-hidden="true">F</div>
-            <div>
-              <p className="text-sm font-bold tracking-wide">FOOTBALL INTELLIGENCE LAB</p>
-              <p className="text-xs text-slate-400">Match Story Engine</p>
-            </div>
+            <div className="flex size-11 items-center justify-center rounded-xl bg-[#205c41] text-xl font-bold text-white" aria-hidden="true">F</div>
+            <span className="text-base font-semibold tracking-tight sm:text-lg">Football Intelligence Lab</span>
           </div>
-          <div role="status" className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200">
-            <span className={`size-2 rounded-full ${connection === 'connected' ? 'bg-emerald-400' : connection === 'checking' ? 'bg-amber-400' : 'bg-rose-400'}`} />
+          <div role="status" aria-live="polite" className="flex items-center gap-2 text-sm font-medium text-[#4c6256]">
+            <span className={`size-2.5 rounded-full ${connection === 'connected' ? 'bg-[#3b9a68]' : connection === 'checking' ? 'bg-amber-500' : 'bg-red-500'}`} />
             {statusText}
           </div>
         </header>
 
-        <section className="grid flex-1 items-center gap-12 py-16 lg:grid-cols-[1.1fr_0.9fr]">
-          <div>
-            <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Foundation · Phase 1</span>
-            <h1 className="mt-7 max-w-2xl text-5xl font-semibold leading-tight tracking-tight sm:text-6xl">See the story <span className="text-emerald-300">behind the match.</span></h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">A workspace for explainable football analysis. Match events, evidence, and clear narratives will come together here.</p>
-            <p className="mt-8 text-sm text-slate-400">The foundation is running. No match data or insights are loaded yet.</p>
+        <section className="grid flex-1 items-center gap-12 py-16 lg:grid-cols-[1fr_1fr] lg:gap-20">
+          <div className="max-w-xl">
+            <h1 className="text-5xl font-semibold leading-[1.1] tracking-tight sm:text-6xl">El fútbol, explicado con datos.</h1>
+            <p className="mt-7 text-lg leading-8 text-[#53675b]">Un espacio para seguir el partido, explorar sus eventos y entender qué muestran los datos.</p>
+            <p className="mt-8 text-base leading-7 text-[#53675b]">Estamos preparando el primer partido sintético para este laboratorio.</p>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-[#10212b] p-6 shadow-2xl shadow-black/20 sm:p-8">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">System status</p>
-                <h2 className="mt-2 text-2xl font-semibold">Ready for kickoff</h2>
-              </div>
-              <span className="text-3xl text-emerald-300" aria-hidden="true">◎</span>
+          <div className="overflow-hidden rounded-3xl border border-[#dce5db] bg-white shadow-[0_20px_60px_-45px_rgba(25,51,42,0.35)]">
+            <div className="bg-[#e8f0e8] p-5 sm:p-8">
+              <svg viewBox="0 0 520 320" className="h-auto w-full rounded-xl bg-[#3d8b60]" aria-hidden="true">
+                <rect x="15" y="15" width="490" height="290" fill="none" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
+                <line x1="260" y1="15" x2="260" y2="305" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
+                <circle cx="260" cy="160" r="46" fill="none" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
+                <circle cx="260" cy="160" r="3" fill="white" />
+                <rect x="15" y="85" width="75" height="150" fill="none" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
+                <rect x="430" y="85" width="75" height="150" fill="none" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
+                <rect x="15" y="120" width="28" height="80" fill="none" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
+                <rect x="477" y="120" width="28" height="80" fill="none" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
+              </svg>
             </div>
-            <div className="mt-8 space-y-4">
-              <StatusRow label="Interface" value="React + TypeScript" />
-              <StatusRow label="API" value="FastAPI + Pydantic" />
-              <StatusRow label="Connection" value={statusText} />
+            <div className="p-6 sm:p-8">
+              <h2 className="text-xl font-semibold">Todavía no hay un partido en pantalla</h2>
+              <p className="mt-2 leading-7 text-[#64766a]">Aquí aparecerán los eventos cuando incorporemos el simulador.</p>
+              {connection === 'unavailable' && <p className="mt-4 font-medium text-red-700">Inicia el backend en el puerto 8000 y actualiza la página.</p>}
             </div>
-            {connection === 'unavailable' && <p className="mt-6 text-sm leading-6 text-amber-200">Start the backend on port 8000, then refresh this page.</p>}
           </div>
         </section>
-
-        <footer className="border-t border-white/10 pt-5 text-xs text-slate-500">Built for synthetic, evidence based match analysis.</footer>
       </div>
     </main>
   )
-}
-
-function StatusRow({ label, value }: { label: string; value: string }) {
-  return <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4 text-sm"><span className="text-slate-400">{label}</span><span className="text-right font-medium text-slate-100">{value}</span></div>
 }
 
 export default App
