@@ -31,7 +31,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173. The connection badge should show **Backend connected**. The API health endpoint is http://127.0.0.1:8000/api/health and API docs are at http://127.0.0.1:8000/docs.
+Open http://localhost:5173. The connection indicator should show **API connected** or **API conectada**, depending on your language selection. Use **EN** and **ES** to switch languages; the choice is saved in your browser. The API health endpoint is http://127.0.0.1:8000/api/health and API docs are at http://127.0.0.1:8000/docs.
 
 If PowerShell blocks activation, run `.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload` from `backend/`. On Bash, activate with `source .venv/bin/activate`.
 

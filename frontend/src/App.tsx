@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { initialLanguage, saveLanguage, translations } from './i18n'
+import type { Language } from './i18n'
 
 type ConnectionStatus = 'checking' | 'connected' | 'unavailable'
 type HealthResponse = { status: string }
@@ -6,7 +8,14 @@ type HealthResponse = { status: string }
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? ''
 
 function App() {
+  const [language, setLanguage] = useState<Language>(initialLanguage)
   const [connection, setConnection] = useState<ConnectionStatus>('checking')
+  const copy = translations[language]
+
+  useEffect(() => {
+    document.documentElement.lang = language
+    saveLanguage(language)
+  }, [language])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -30,9 +39,9 @@ function App() {
   }, [])
 
   const statusText = {
-    checking: 'Comprobando conexión',
-    connected: 'API conectada',
-    unavailable: 'API sin conexión',
+    checking: copy.checking,
+    connected: copy.connected,
+    unavailable: copy.unavailable,
   }[connection]
 
   return (
@@ -43,17 +52,32 @@ function App() {
             <div className="flex size-11 items-center justify-center rounded-xl bg-[#205c41] text-xl font-bold text-white" aria-hidden="true">F</div>
             <span className="text-base font-semibold tracking-tight sm:text-lg">Football Intelligence Lab</span>
           </div>
-          <div role="status" aria-live="polite" className="flex items-center gap-2 text-sm font-medium text-[#4c6256]">
-            <span className={`size-2.5 rounded-full ${connection === 'connected' ? 'bg-[#3b9a68]' : connection === 'checking' ? 'bg-amber-500' : 'bg-red-500'}`} />
-            {statusText}
+          <div className="flex flex-wrap items-center gap-5">
+            <div role="group" aria-label={copy.languageLabel} className="flex gap-1 rounded-lg border border-[#dce5db] p-1">
+              {(['en', 'es'] as const).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  aria-pressed={language === option}
+                  onClick={() => setLanguage(option)}
+                  className={`rounded-md px-3 py-1 text-sm font-semibold transition-colors ${language === option ? 'bg-[#205c41] text-white' : 'text-[#4c6256] hover:bg-[#e8f0e8]'}`}
+                >
+                  {option.toUpperCase()}
+                </button>
+              ))}
+            </div>
+            <div role="status" aria-live="polite" className="flex items-center gap-2 text-sm font-medium text-[#4c6256]">
+              <span className={`size-2.5 rounded-full ${connection === 'connected' ? 'bg-[#3b9a68]' : connection === 'checking' ? 'bg-amber-500' : 'bg-red-500'}`} />
+              {statusText}
+            </div>
           </div>
         </header>
 
         <section className="grid flex-1 items-center gap-12 py-16 lg:grid-cols-[1fr_1fr] lg:gap-20">
           <div className="max-w-xl">
-            <h1 className="text-5xl font-semibold leading-[1.1] tracking-tight sm:text-6xl">El fútbol, explicado con datos.</h1>
-            <p className="mt-7 text-lg leading-8 text-[#53675b]">Un espacio para seguir el partido, explorar sus eventos y entender qué muestran los datos.</p>
-            <p className="mt-8 text-base leading-7 text-[#53675b]">Estamos preparando el primer partido sintético para este laboratorio.</p>
+            <h1 className="text-5xl font-semibold leading-[1.1] tracking-tight sm:text-6xl">{copy.headline}</h1>
+            <p className="mt-7 text-lg leading-8 text-[#53675b]">{copy.introduction}</p>
+            <p className="mt-8 text-base leading-7 text-[#53675b]">{copy.preparation}</p>
           </div>
 
           <div className="overflow-hidden rounded-3xl border border-[#dce5db] bg-white shadow-[0_20px_60px_-45px_rgba(25,51,42,0.35)]">
@@ -70,9 +94,9 @@ function App() {
               </svg>
             </div>
             <div className="p-6 sm:p-8">
-              <h2 className="text-xl font-semibold">Todavía no hay un partido en pantalla</h2>
-              <p className="mt-2 leading-7 text-[#64766a]">Aquí aparecerán los eventos cuando incorporemos el simulador.</p>
-              {connection === 'unavailable' && <p className="mt-4 font-medium text-red-700">Inicia el backend en el puerto 8000 y actualiza la página.</p>}
+              <h2 className="text-xl font-semibold">{copy.emptyTitle}</h2>
+              <p className="mt-2 leading-7 text-[#64766a]">{copy.emptyDescription}</p>
+              {connection === 'unavailable' && <p className="mt-4 font-medium text-red-700">{copy.connectionHelp}</p>}
             </div>
           </div>
         </section>
