@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { MatchReplay } from './features/replay/MatchReplay'
 import { initialLanguage, saveLanguage, translations } from './i18n'
 import type { Language } from './i18n'
 
@@ -73,32 +74,10 @@ function App() {
           </div>
         </header>
 
-        <section className="grid flex-1 items-center gap-12 py-16 lg:grid-cols-[1fr_1fr] lg:gap-20">
-          <div className="max-w-xl">
-            <h1 className="text-5xl font-semibold leading-[1.1] tracking-tight sm:text-6xl">{copy.headline}</h1>
-            <p className="mt-7 text-lg leading-8 text-[#53675b]">{copy.introduction}</p>
-            <p className="mt-8 text-base leading-7 text-[#53675b]">{copy.preparation}</p>
-          </div>
-
-          <div className="overflow-hidden rounded-3xl border border-[#dce5db] bg-white shadow-[0_20px_60px_-45px_rgba(25,51,42,0.35)]">
-            <div className="bg-[#e8f0e8] p-5 sm:p-8">
-              <svg viewBox="0 0 520 320" className="h-auto w-full rounded-xl bg-[#3d8b60]" aria-hidden="true">
-                <rect x="15" y="15" width="490" height="290" fill="none" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
-                <line x1="260" y1="15" x2="260" y2="305" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
-                <circle cx="260" cy="160" r="46" fill="none" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
-                <circle cx="260" cy="160" r="3" fill="white" />
-                <rect x="15" y="85" width="75" height="150" fill="none" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
-                <rect x="430" y="85" width="75" height="150" fill="none" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
-                <rect x="15" y="120" width="28" height="80" fill="none" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
-                <rect x="477" y="120" width="28" height="80" fill="none" stroke="white" strokeOpacity="0.8" strokeWidth="2" />
-              </svg>
-            </div>
-            <div className="p-6 sm:p-8">
-              <h2 className="text-xl font-semibold">{copy.emptyTitle}</h2>
-              <p className="mt-2 leading-7 text-[#64766a]">{copy.emptyDescription}</p>
-              {connection === 'unavailable' && <p className="mt-4 font-medium text-red-700">{copy.connectionHelp}</p>}
-            </div>
-          </div>
+        <section className="flex-1 py-10 sm:py-14">
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{copy.replayTitle}</h1>
+          <p className="mt-3 max-w-3xl leading-7 text-[#53675b]">{copy.syntheticNotice}</p>
+          <MatchReplay language={language} />
         </section>
       </div>
     </main>

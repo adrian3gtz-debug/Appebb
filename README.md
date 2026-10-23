@@ -2,7 +2,7 @@
 
 From match events to explainable football intelligence.
 
-This is the foundation for Match Story Engine. It contains a React frontend, a FastAPI health endpoint, validated match models, possession-time calculation, and one reproducible synthetic fixture. Browser playback, tactical insights, and AI explanations are planned for later stages.
+This is the foundation for Match Story Engine. It contains a React frontend, FastAPI endpoints, validated match models, possession-time calculation, and browser playback of one reproducible synthetic fixture. Tactical insights and AI explanations are planned for later stages.
 
 ## Requirements
 
@@ -41,7 +41,7 @@ Defaults work without an `.env` file. Copy `.env.example` to `frontend/.env` to 
 
 ## Checks
 
-Run `npm run build` in `frontend/`. In `backend/`, install `requirements-dev.txt` and run `pytest`.
+Run `npm test` and `npm run build` in `frontend/`. In `backend/`, install `requirements-dev.txt` and run `pytest`.
 
 ## Generate a synthetic match
 
@@ -59,3 +59,13 @@ This writes a new JSON file and prints statistics derived from its events and co
 - `backend/`: FastAPI and Pydantic
 
 All generated match data is synthetic and must be identified as such.
+
+## Replay the demo
+
+`GET /api/matches/demo` loads and validates the included fixture with Pydantic. Its response includes `source: "synthetic"`, `duration_seconds: 5400`, and the full match. Missing or invalid fixture files return HTTP 503.
+
+The browser downloads the full match once and starts paused at 00:00. Use Play/Pause, Restart, and the 1×/10×/30×/60× speed selector. The default 60× plays the 90-minute match in 90 seconds, excluding pauses. The scoreboard and latest eight events are derived only from events at or before the playback clock. Restart clears the visible progress and pauses, preserving speed. Playback stops at 90:00. The second half begins at 45:00 without a halftime break; this fixture has no added time. Changing EN/ES preserves playback.
+
+This is local playback of a recorded synthetic sequence, not server-side live ingestion or a new match generated on every play. The fixture is delivered in full, so future events can be inspected in the network response even though the UI hides them. Timing uses elapsed browser time; after a background-tab delay the next update may catch up.
+
+Code: `backend/app/api/matches.py` exposes the endpoint, `backend/app/services/match_repository.py` reads the fixture, and `frontend/src/features/replay/` contains the playback clock, controls and event list.

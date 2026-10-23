@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from app.api.matches import router as matches_router
+
 
 class HealthResponse(BaseModel):
     status: str
@@ -20,6 +22,7 @@ def allowed_origins() -> list[str]:
 
 
 app = FastAPI(title="Football Intelligence Lab API")
+app.include_router(matches_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins(),
