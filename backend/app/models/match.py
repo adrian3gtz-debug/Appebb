@@ -6,6 +6,7 @@ from typing import Literal
 
 from pydantic import Field, model_validator
 
+from app.models.ball_state import BallStateInterval
 from app.models.events import MatchEvent, PassEvent, PressureEvent, RecoveryEvent, Schema
 
 
@@ -34,6 +35,7 @@ class Match(Schema):
     home_team: Team
     away_team: Team
     events: list[MatchEvent] = Field(default_factory=list)
+    ball_states: list[BallStateInterval] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def check_relationships(self) -> Match:
@@ -47,10 +49,24 @@ class Match(Schema):
         if rosters[self.home_team.id] & rosters[self.away_team.id]:
             raise ValueError("player ids must be unique across both teams")
 
+        if self.ball_states:
+            previous_end = 0
+            for interval in self.ball_states:
+                if interval.start_second < previous_end:
+                    raise ValueError("ball-state intervals must not overlap")
+                if interval.start_second > previous_end:
+                    raise ValueError("ball-state intervals must not have gaps")
+                if interval.team_id is not None and interval.team_id not in rosters:
+                    raise ValueError("ball-state interval refers to an unknown team")
+                previous_end = interval.end_second
+            if previous_end != 5400:
+                raise ValueError("ball-state intervals must cover the full match clock")
+
         seen_ids: set[str] = set()
         possession_owners: dict[str, str] = {}
         previous_second = -1
         previous_possession_id: str | None = None
+        interval_index = 0
 
         for event in self.events:
             if event.id in seen_ids:
@@ -65,6 +81,17 @@ class Match(Schema):
                 raise ValueError(f"event {event.id} refers to an unknown team")
             if event.player_id not in rosters[event.team_id]:
                 raise ValueError(f"event {event.id} refers to a player outside its team")
+            if self.ball_states:
+                while (
+                    interval_index < len(self.ball_states)
+                    and event.second >= self.ball_states[interval_index].end_second
+                ):
+                    interval_index += 1
+                if interval_index == len(self.ball_states):
+                    raise ValueError(f"event {event.id} falls outside the ball-state timeline")
+                ball_state = self.ball_states[interval_index]
+                if ball_state.state != "controlled" or ball_state.team_id != event.possession_team_id:
+                    raise ValueError(f"event {event.id} disagrees with ball control at that second")
 
             if event.possession_id != previous_possession_id and event.possession_id in possession_owners:
                 raise ValueError("a possession cannot resume after another possession")

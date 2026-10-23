@@ -8,8 +8,16 @@ The models in `backend/app/models/` define the common format for synthetic match
 - Player IDs are unique across the match. An event actor belongs to the stated team.
 - Field coordinates use a fixed, normalized rectangle: `x` and `y` are both 0–100. These are not metres. The orientation does not change at halftime.
 - In period 1, the home team attacks toward `x = 100`; in period 2 it attacks toward `x = 0`. The away team attacks in the opposite direction.
-- `second` is elapsed match time from kickoff. Period 1 covers 0–2699; period 2 covers 2700–5400. This first version models regulation time only, without stoppage time or extra time.
+- `second` is elapsed match time from kickoff. Period 1 covers 0–2699; period 2 covers 2700–5399. The clock boundary at 5400 ends regulation time and cannot contain an action. This first version models regulation time only, without stoppage time or extra time.
 - Events are stored in chronological order. Equal seconds are permitted and retain list order.
+
+## Ball-control timeline and possession time
+
+`ball_states` is a separate, optional list of intervals. Each interval has `start_second`, `end_second`, `state`, and (only for `controlled`) `team_id`. States are `controlled`, `contested`, and `out_of_play`. Intervals are half-open: `[start_second, end_second)`, so a change at second 100 belongs to the interval starting at 100.
+
+If a timeline is present, it must cover seconds 0–5400 in order, without gaps or overlaps. A recorded event must occur during a `controlled` interval for its `possession_team_id`. An event-only match remains valid, but its possession time cannot be calculated.
+
+`calculate_possession` adds each team's controlled seconds. Home and away percentages use **home controlled seconds + away controlled seconds** as the denominator. Contested and out-of-play seconds are reported separately and assigned to neither team. If neither team controls the ball, both percentages are unavailable rather than invented. These values are exact only within a complete synthetic timeline; sparse event logs alone cannot establish real possession duration.
 
 ## Event fields
 

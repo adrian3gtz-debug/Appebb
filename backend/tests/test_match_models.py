@@ -87,6 +87,7 @@ def test_example_possession_is_valid() -> None:
         (0, {"target_player_id": "home-04"}),
         (0, {"possession_team_id": "home"}),
         (4, {"second": 2700}),
+        (4, {"period": 2, "second": 5400}),
     ],
 )
 def test_invalid_event_or_relationship_is_rejected(event_index: int, changes: dict) -> None:

@@ -22,7 +22,7 @@ class BaseEvent(Schema):
     id: str = Field(min_length=1)
     match_id: str = Field(min_length=1)
     period: Literal[1, 2]
-    second: int = Field(ge=0, le=5400)
+    second: int = Field(ge=0, lt=5400)
     team_id: str = Field(min_length=1)
     player_id: str = Field(min_length=1)
     possession_id: str = Field(min_length=1)
