@@ -1,2 +1,3 @@
-# Vercel installs from the repository root; share the local backend dependencies.
--r backend/requirements.txt
+fastapi>=0.115,<1
+pydantic>=2,<3
+uvicorn[standard]>=0.30,<1

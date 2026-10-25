@@ -16,7 +16,7 @@ Use the Hobby plan and the provided `vercel.app` domains. This setup does not en
 ## What the deployment files do
 
 - Root `main.py` exposes the existing `app.main.app` through a location Vercel recognizes. It adds `backend/` to Python's import path, equivalent to running from that folder locally. It does not start a separate Uvicorn server inside a function.
-- Root `requirements.txt` includes `backend/requirements.txt`, keeping the dependency list shared with local development.
+- Root `requirements.txt` lists the Python dependencies directly for Vercel. `backend/requirements.txt` includes that list for local pip installs, so there is one dependency list. The root file must remain flat: the Vercel deployment rejected an included requirements file.
 - `.python-version` selects Python 3.12.
 - Root `vercel.json` selects FastAPI and excludes `frontend/**` from the Python function. The backend code and `data/synthetic/` remain inside the project root and the function bundle; no generated JSON needs to be duplicated or downloaded at runtime.
 - `frontend/src/services/api.ts` shares the API origin between health, match and analysis requests. It removes whitespace and trailing slashes. The variable is read by Vite at **build time**.
