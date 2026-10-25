@@ -7,29 +7,12 @@ from typing import Any
 
 from pydantic import TypeAdapter
 
-from app.models import BallStateInterval, Coordinate, Match, MatchEvent, Player, Team
+from app.models import BallStateInterval, Coordinate, Match, MatchEvent
+from app.services.synthetic_common import field_point as _point, make_team as _team
 
 
 def _player(team: str, number: int) -> str:
     return f"{team}-{number:02}"
-
-
-def _team(team_id: str, name: str) -> Team:
-    roles = ["goalkeeper"] + ["defender"] * 4 + ["midfielder"] * 3 + ["forward"] * 3
-    return Team.model_validate({
-        "id": team_id,
-        "name": name,
-        "players": [
-            Player(id=_player(team_id, number), name=f"{name} {number}", role=role)
-            for number, role in enumerate(roles, start=1)
-        ],
-    })
-
-
-def _point(x: float, y: float, team: str, period: int) -> Coordinate:
-    """Convert attacking-relative x to the fixed field convention; y stays fixed."""
-    attacks_right = (team == "home") == (period == 1)
-    return Coordinate(x=round(x if attacks_right else 100 - x, 2), y=round(y, 2))
 
 
 def _progress(location: Coordinate, team: str, period: int) -> float:

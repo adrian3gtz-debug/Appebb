@@ -30,6 +30,12 @@ describe('playback clock', () => {
   it('resets during play, preserving the chosen speed', () => {
     expect(playbackReducer({ second: 400, speed: 10, playing: true }, { type: 'reset' })).toEqual({ second: 0, speed: 10, playing: false })
   })
+  it('seeks to a bounded time and pauses playback for inspection', () => {
+    const playing = { second: 100, speed: 30, playing: true }
+    expect(playbackReducer(playing, { type: 'seek', second: 1200, duration: 5400 })).toEqual({ second: 1200, speed: 30, playing: false })
+    expect(playbackReducer(playing, { type: 'seek', second: -10, duration: 5400 }).second).toBe(0)
+    expect(playbackReducer(playing, { type: 'seek', second: 6000, duration: 5400 }).second).toBe(5400)
+  })
   it('formats period boundaries without restarting the match clock', () => {
     expect(formatClock(2699.9)).toBe('44:59')
     expect(formatClock(2700)).toBe('45:00')

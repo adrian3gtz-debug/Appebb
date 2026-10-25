@@ -3,11 +3,13 @@
 import logging
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
+from app.analytics.recoveries import analyze_recoveries
 from app.models.match import Match
-from app.services.match_repository import load_demo_match
+from app.models.recoveries import RecoveryAnalysis
+from app.services.match_repository import DemoScenario, load_scenario
 
 router = APIRouter(prefix="/api/matches", tags=["matches"])
 logger = logging.getLogger(__name__)
@@ -19,11 +21,22 @@ class DemoMatchResponse(BaseModel):
     match: Match
 
 
-@router.get("/demo", response_model=DemoMatchResponse)
-def demo_match() -> DemoMatchResponse:
+def _available_match(scenario: DemoScenario) -> Match:
     try:
-        match = load_demo_match()
+        match = load_scenario(scenario)
     except (OSError, ValueError):
         logger.exception("Could not load the synthetic demo")
         raise HTTPException(status_code=503, detail="Demo match unavailable") from None
-    return DemoMatchResponse(match=match)
+    return match
+
+
+@router.get("/demo", response_model=DemoMatchResponse)
+def demo_match(scenario: DemoScenario = "original") -> DemoMatchResponse:
+    return DemoMatchResponse(match=_available_match(scenario))
+
+
+@router.get("/demo/recoveries", response_model=RecoveryAnalysis)
+def recovery_analysis(
+    second: int = Query(ge=0, le=5400), scenario: DemoScenario = "original",
+) -> RecoveryAnalysis:
+    return analyze_recoveries(_available_match(scenario), second)

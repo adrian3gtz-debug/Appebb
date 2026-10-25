@@ -2,7 +2,7 @@
 
 From match events to explainable football intelligence.
 
-This is the foundation for Match Story Engine. It contains a React frontend, FastAPI endpoints, validated match models, possession-time calculation, and browser playback of one reproducible synthetic fixture. Tactical insights and AI explanations are planned for later stages.
+This is the foundation for Match Story Engine. It contains a React frontend, FastAPI endpoints, validated match models, possession-time calculation, and browser playback of reproducible synthetic fixtures, and a first recovery-to-attack analysis with inspectable evidence. AI provider integration is planned for a later stage.
 
 ## Requirements
 
@@ -69,3 +69,11 @@ The browser downloads the full match once and starts paused at 00:00. Use Play/P
 This is local playback of a recorded synthetic sequence, not server-side live ingestion or a new match generated on every play. The fixture is delivered in full, so future events can be inspected in the network response even though the UI hides them. Timing uses elapsed browser time; after a background-tab delay the next update may catch up.
 
 Code: `backend/app/api/matches.py` exposes the endpoint, `backend/app/services/match_repository.py` reads the fixture, and `frontend/src/features/replay/` contains the playback clock, controls and event list.
+
+## Inspect recovery-to-attack evidence
+
+The new default test match is **More high recoveries**. Move the timeline to **20:00** (seeking pauses playback), then scroll to **From recovery to attack**. The first comparison shows high recoveries increasing from **1 to 6**, with **3** of the later-window sequences reaching a shot before the interval closed. These are synthetic scenario outputs. Select **12:15** on the pitch/list to inspect its recorded actions.
+
+Switch to **Stable recoveries** for a no-highlight counterexample, or **More recoveries, no shots** for an increase without resulting shots. **Circulation vs counterattack** preserves the original fixture. Changing the test match resets playback. All controls, evidence explanations and labels support EN/ES.
+
+The API computes evidence through the requested second at `/api/matches/demo/recoveries?scenario=higher_recoveries&second=1200`. The UI refreshes analysis separately from the playback clock and displays its evidence timestamp. No AI calls or paid services are involved. Read [the recovery methodology](docs/recovery-analysis.md) for formulas, editable thresholds, sequence termination, incomplete observations, window boundaries and synthetic-data limits.

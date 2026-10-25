@@ -5,11 +5,28 @@ import { fetchDemoMatch } from '../../services/matches'
 import type { DemoMatchResponse } from '../../types/match'
 import { formatClock, matchAt } from './playback'
 import { usePlayback } from './usePlayback'
+import { RecoveryPanel } from '../recoveries/RecoveryPanel'
+import { recoveryCopy } from '../recoveries/copy'
+import type { DemoScenario } from '../../types/recoveries'
 
 const buttonStyle = 'rounded-lg border border-[#c8d6c9] px-5 py-2.5 font-medium hover:bg-[#e8f0e8] disabled:cursor-not-allowed disabled:opacity-50'
 type LoadState = { status: 'loading' } | { status: 'error' } | { status: 'ready'; data: DemoMatchResponse }
 
 export function MatchReplay({ language }: { language: Language }) {
+  const [scenario, setScenario] = useState<DemoScenario>('higher_recoveries')
+  const copy = recoveryCopy[language]
+  return <>
+    <label className="mt-6 flex flex-wrap items-center gap-3 font-medium">
+      {copy.scenario}
+      <select className="max-w-full rounded-lg border border-[#c8d6c9] bg-white px-3 py-2.5" value={scenario} onChange={(event) => setScenario(event.target.value as DemoScenario)}>
+        {(Object.keys(copy.scenarios) as DemoScenario[]).map((option) => <option key={option} value={option}>{copy.scenarios[option]}</option>)}
+      </select>
+    </label>
+    <LoadReplay key={scenario} scenario={scenario} language={language} />
+  </>
+}
+
+function LoadReplay({ language, scenario }: { language: Language; scenario: DemoScenario }) {
   const [load, setLoad] = useState<LoadState>({ status: 'loading' })
   const [attempt, setAttempt] = useState(0)
   const copy = translations[language]
@@ -17,12 +34,12 @@ export function MatchReplay({ language }: { language: Language }) {
   useEffect(() => {
     const controller = new AbortController()
     setLoad({ status: 'loading' })
-    fetchDemoMatch(controller.signal).then(
+    fetchDemoMatch(controller.signal, scenario).then(
       (data) => { if (!controller.signal.aborted) setLoad({ status: 'ready', data }) },
       () => { if (!controller.signal.aborted) setLoad({ status: 'error' }) },
     )
     return () => controller.abort()
-  }, [attempt])
+  }, [attempt, scenario])
 
   if (load.status === 'loading') return <p role="status" className="py-12">{copy.loading}</p>
   if (load.status === 'error') return (
@@ -31,10 +48,10 @@ export function MatchReplay({ language }: { language: Language }) {
       <button className={buttonStyle} onClick={() => setAttempt((value) => value + 1)}>{copy.retry}</button>
     </div>
   )
-  return <Replay key={load.data.match.id} data={load.data} language={language} />
+  return <Replay data={load.data} language={language} scenario={scenario} />
 }
 
-function Replay({ data, language }: { data: DemoMatchResponse; language: Language }) {
+function Replay({ data, language, scenario }: { data: DemoMatchResponse; language: Language; scenario: DemoScenario }) {
   const { match, duration_seconds: duration } = data
   const { second, playing, speed, dispatch } = usePlayback(duration)
   const copy = translations[language]
@@ -44,6 +61,7 @@ function Replay({ data, language }: { data: DemoMatchResponse; language: Languag
   const periodLabel = finished ? copy.finished : second < 2700 ? copy.firstHalf : copy.secondHalf
 
   return (
+    <>
     <div className="mt-8 grid items-start gap-8 lg:grid-cols-[1.1fr_1fr]">
       <section aria-label={copy.replayTitle} className="rounded-2xl border border-[#dce5db] bg-white p-5 sm:p-8">
         <div className="flex justify-between gap-3 text-sm text-[#53675b]">
@@ -56,7 +74,10 @@ function Replay({ data, language }: { data: DemoMatchResponse; language: Languag
           <h2 className="break-words text-lg font-semibold">{match.away_team.name}</h2>
         </div>
         <p className="my-8 text-center text-3xl tabular-nums">{formatClock(second)}</p>
-        <progress aria-label={copy.progress} max={duration} value={second} className="h-2 w-full accent-[#205c41]" />
+        <label className="block text-sm text-[#53675b]">
+          {copy.progress}
+          <input type="range" min={0} max={duration} step={1} value={Math.floor(second)} aria-valuetext={formatClock(second)} onChange={(event) => dispatch({ type: 'seek', second: Number(event.target.value), duration })} className="mt-2 w-full accent-[#205c41]" />
+        </label>
         <div className="mt-7 flex flex-wrap items-center gap-3">
           <button className="rounded-lg bg-[#205c41] px-5 py-2.5 font-medium text-white hover:bg-[#184732] disabled:cursor-not-allowed disabled:opacity-50" disabled={finished} onClick={() => dispatch({ type: 'toggle', duration })}>{playing ? copy.pause : copy.play}</button>
           <button className={buttonStyle} onClick={() => dispatch({ type: 'reset' })}>{copy.reset}</button>
@@ -91,5 +112,7 @@ function Replay({ data, language }: { data: DemoMatchResponse; language: Languag
         )}
       </section>
     </div>
+    <RecoveryPanel match={match} second={second} playing={playing} scenario={scenario} language={language} />
+    </>
   )
 }

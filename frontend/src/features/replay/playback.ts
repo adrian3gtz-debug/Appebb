@@ -7,6 +7,7 @@ export type PlaybackAction =
   | { type: 'tick'; elapsed: number; duration: number }
   | { type: 'speed'; speed: number }
   | { type: 'reset' }
+  | { type: 'seek'; second: number; duration: number }
 
 export function playbackReducer(state: PlaybackState, action: PlaybackAction): PlaybackState {
   switch (action.type) {
@@ -14,6 +15,8 @@ export function playbackReducer(state: PlaybackState, action: PlaybackAction): P
       return state.second >= action.duration ? state : { ...state, playing: !state.playing }
     case 'speed':
       return { ...state, speed: action.speed }
+    case 'seek':
+      return { ...state, second: Math.max(0, Math.min(action.duration, action.second)), playing: false }
     case 'reset':
       return { ...state, second: 0, playing: false }
     case 'tick': {

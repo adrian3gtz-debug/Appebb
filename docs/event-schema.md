@@ -35,4 +35,4 @@ Every event contains `id`, `match_id`, `type`, `period`, `second`, `team_id`, `p
 
 An illustrative sequence has an away possession with home pressure, followed by a home recovery with a new possession ID, a completed pass, a carry, and a saved shot. The corresponding validation example is in `backend/tests/test_match_models.py`. It is an example of structure, not a real match or a generated scenario.
 
-The schema checks field bounds, allowed values, rosters, event ordering, and possession ownership. It does not yet prove that every ball movement is physically continuous or that an event sequence is tactically realistic. The synthetic generator and its tests will be responsible for those properties in the next stage.
+The schema checks field bounds, allowed values, rosters, event ordering, and possession ownership. It does not yet prove that every ball movement is physically continuous or that an event sequence is tactically realistic. The synthetic generators and their tests check continuity and selected plausibility bounds; see [the original scenario](synthetic-scenario.md) and [recovery analysis](recovery-analysis.md) for their scope and limitations.
