@@ -77,3 +77,9 @@ The new default test match is **More high recoveries**. Move the timeline to **2
 Switch to **Stable recoveries** for a no-highlight counterexample, or **More recoveries, no shots** for an increase without resulting shots. **Circulation vs counterattack** preserves the original fixture. Changing the test match resets playback. All controls, evidence explanations and labels support EN/ES.
 
 The API computes evidence through the requested second at `/api/matches/demo/recoveries?scenario=higher_recoveries&second=1200`. The UI refreshes analysis separately from the playback clock and displays its evidence timestamp. No AI calls or paid services are involved. Read [the recovery methodology](docs/recovery-analysis.md) for formulas, editable thresholds, sequence termination, incomplete observations, window boundaries and synthetic-data limits.
+
+## Deploy to Vercel
+
+Use two projects from this repository: **Vite** with Root Directory `frontend`, and **FastAPI** with Root Directory `./`. Both track `phase1-foundation`. The root deployment entry keeps `backend/app/` and `data/synthetic/` available in the Python function.
+
+Set `BACKEND_CORS_ORIGINS` on the API project to the exact frontend Production origin. Set `VITE_API_BASE_URL` on the frontend project to the API Production origin, without `/api`. Redeploy each project after changing its environment variables. See [the deployment guide](docs/vercel-deployment.md) for the dashboard steps, branch selection, validation URLs and troubleshooting.

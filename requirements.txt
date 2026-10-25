@@ -1,0 +1,2 @@
+# Vercel installs from the repository root; share the local backend dependencies.
+-r backend/requirements.txt

@@ -1,7 +1,6 @@
 import type { DemoMatchResponse } from '../types/match'
 import type { DemoScenario, RecoveryAnalysis } from '../types/recoveries'
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? ''
+import { apiBaseUrl } from './api'
 
 export async function fetchDemoMatch(signal: AbortSignal, scenario: DemoScenario = 'original'): Promise<DemoMatchResponse> {
   const response = await fetch(`${apiBaseUrl}/api/matches/demo?scenario=${scenario}`, { signal })

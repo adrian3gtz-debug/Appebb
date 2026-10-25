@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { MatchReplay } from './features/replay/MatchReplay'
+import { apiBaseUrl } from './services/api'
 import { initialLanguage, saveLanguage, translations } from './i18n'
 import type { Language } from './i18n'
 
 type ConnectionStatus = 'checking' | 'connected' | 'unavailable'
 type HealthResponse = { status: string }
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? ''
 
 function App() {
   const [language, setLanguage] = useState<Language>(initialLanguage)
