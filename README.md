@@ -78,6 +78,14 @@ Switch to **Stable recoveries** for a no-highlight counterexample, or **More rec
 
 The API computes evidence through the requested second at `/api/matches/demo/recoveries?scenario=higher_recoveries&second=1200`. The UI refreshes analysis separately from the playback clock and displays its evidence timestamp. No AI calls or paid services are involved. Read [the recovery methodology](docs/recovery-analysis.md) for formulas, editable thresholds, sequence termination, incomplete observations, window boundaries and synthetic-data limits.
 
+## Inspect match statistics
+
+The **Match statistics / Estadísticas del partido** panel shows possession, attempted/completed passes, accuracy, shots and goals through the displayed analysis time. Expand the shot breakdown and calculation notes to inspect outcomes and controlled/contested/out-of-play time. Missing percentages display `—` rather than zero.
+
+Statistics and recovery evidence share `/api/matches/demo/analysis?scenario=original&second=1200`, avoiding a second polling loop. Pausing or seeking updates the cutoff; future counts are hidden when rewinding. Try **Circulation vs counterattack** at 90:00 to inspect higher possession alongside fewer shots and a defeat. These remain authored synthetic outcomes.
+
+Read [the statistics methodology](docs/match-statistics.md) and [the research notes on xT, VAEP, pitch control and xG](docs/football-analytics-research.md). These advanced models are research directions, not implemented features.
+
 ## Deploy to Vercel
 
 Use two projects from this repository: **Vite** with Root Directory `frontend`, and **FastAPI** with Root Directory `./`. Both track `phase1-foundation`. The root deployment entry keeps `backend/app/` and `data/synthetic/` available in the Python function.

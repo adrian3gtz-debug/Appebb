@@ -1,5 +1,6 @@
 import type { DemoMatchResponse } from '../types/match'
-import type { DemoScenario, RecoveryAnalysis } from '../types/recoveries'
+import type { DemoScenario } from '../types/recoveries'
+import type { MatchAnalysis } from '../types/statistics'
 import { apiBaseUrl } from './api'
 
 export async function fetchDemoMatch(signal: AbortSignal, scenario: DemoScenario = 'original'): Promise<DemoMatchResponse> {
@@ -14,8 +15,8 @@ export async function fetchDemoMatch(signal: AbortSignal, scenario: DemoScenario
 }
 
 
-export async function fetchRecoveryAnalysis(scenario: DemoScenario, second: number, signal: AbortSignal): Promise<RecoveryAnalysis> {
-  const response = await fetch(`${apiBaseUrl}/api/matches/demo/recoveries?scenario=${scenario}&second=${second}`, { signal })
+export async function fetchMatchAnalysis(scenario: DemoScenario, second: number, signal: AbortSignal): Promise<MatchAnalysis> {
+  const response = await fetch(`${apiBaseUrl}/api/matches/demo/analysis?scenario=${scenario}&second=${second}`, { signal })
   if (!response.ok) throw new Error(`Analysis request failed: ${response.status}`)
   return response.json()
 }

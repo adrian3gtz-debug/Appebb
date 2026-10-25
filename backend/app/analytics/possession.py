@@ -2,24 +2,15 @@
 
 from __future__ import annotations
 
-from pydantic import Field
-
-from app.models.events import Schema
 from app.models.match import Match
+from app.models.possession import PossessionSummary
 
 
-class PossessionSummary(Schema):
-    home_seconds: int = Field(ge=0)
-    away_seconds: int = Field(ge=0)
-    contested_seconds: int = Field(ge=0)
-    out_of_play_seconds: int = Field(ge=0)
-    home_share_percent: float | None = Field(default=None, ge=0, le=100)
-    away_share_percent: float | None = Field(default=None, ge=0, le=100)
-
-
-def calculate_possession(match: Match) -> PossessionSummary:
+def calculate_possession(match: Match, second: int = 5400) -> PossessionSummary:
     """Share of controlled time; contested and out-of-play time stay separate."""
 
+    if not 0 <= second <= 5400:
+        raise ValueError("second must be between 0 and 5400")
     if not match.ball_states:
         raise ValueError("a complete ball-state timeline is required")
 
@@ -29,7 +20,9 @@ def calculate_possession(match: Match) -> PossessionSummary:
     out_of_play_seconds = 0
 
     for interval in match.ball_states:
-        duration = interval.end_second - interval.start_second
+        if interval.start_second >= second:
+            break
+        duration = min(interval.end_second, second) - interval.start_second
         if interval.state == "contested":
             contested_seconds += duration
         elif interval.state == "out_of_play":

@@ -7,6 +7,8 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from app.analytics.recoveries import analyze_recoveries
+from app.analytics.statistics import calculate_statistics
+from app.models.statistics import MatchAnalysis
 from app.models.match import Match
 from app.models.recoveries import RecoveryAnalysis
 from app.services.match_repository import DemoScenario, load_scenario
@@ -40,3 +42,15 @@ def recovery_analysis(
     second: int = Query(ge=0, le=5400), scenario: DemoScenario = "original",
 ) -> RecoveryAnalysis:
     return analyze_recoveries(_available_match(scenario), second)
+
+
+@router.get("/demo/analysis", response_model=MatchAnalysis)
+def match_analysis(
+    second: int = Query(ge=0, le=5400), scenario: DemoScenario = "original",
+) -> MatchAnalysis:
+    match = _available_match(scenario)
+    return MatchAnalysis(
+        match_id=match.id, as_of_second=second,
+        statistics=calculate_statistics(match, second),
+        recoveries=analyze_recoveries(match, second),
+    )

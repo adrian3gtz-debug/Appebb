@@ -2,18 +2,16 @@ import { useMemo, useState } from 'react'
 import { translations } from '../../i18n'
 import type { Language } from '../../i18n'
 import type { Match } from '../../types/match'
-import type { DemoScenario } from '../../types/recoveries'
+import type { RecoveryAnalysis } from '../../types/recoveries'
 import { formatClock } from '../replay/playback'
 import { recoveryCopy } from './copy'
 import { RecoveryPitch } from './RecoveryPitch'
-import { useRecoveryAnalysis } from './useRecoveryAnalysis'
 
-interface Props { match: Match; second: number; playing: boolean; scenario: DemoScenario; language: Language }
+interface Props { match: Match; second: number; data: RecoveryAnalysis; language: Language }
 
-export function RecoveryPanel({ match, second, playing, scenario, language }: Props) {
+export function RecoveryPanel({ match, second, data, language }: Props) {
   const copy = recoveryCopy[language]
   const eventCopy = translations[language]
-  const { data, error, retry } = useRecoveryAnalysis(scenario, second, playing)
   const [teamId, setTeamId] = useState(match.home_team.id)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const events = useMemo(() => new Map(match.events.map((event) => [event.id, event])), [match])
@@ -36,8 +34,7 @@ export function RecoveryPanel({ match, second, playing, scenario, language }: Pr
         </select>
       </label>
     </div>
-    {error && <div role="alert" className="mt-5 rounded-lg bg-red-50 p-4 text-red-800">{copy.error} <button onClick={retry} className="ml-2 font-semibold underline">{copy.retry}</button></div>}
-    {!data ? <p role="status" className="py-8">{copy.loading}</p> : <>
+    <>
       <p className="mt-5 text-sm tabular-nums text-[#53675b]">{copy.through} {formatClock(data.as_of_second)}</p>
       <div className="mt-6 grid items-start gap-8 xl:grid-cols-2">
         <div>
@@ -91,6 +88,6 @@ export function RecoveryPanel({ match, second, playing, scenario, language }: Pr
           </>}
         </div>
       </div>
-    </>}
+    </>
   </section>
 }

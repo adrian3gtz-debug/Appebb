@@ -5,7 +5,7 @@ import { fetchDemoMatch } from '../../services/matches'
 import type { DemoMatchResponse } from '../../types/match'
 import { formatClock, matchAt } from './playback'
 import { usePlayback } from './usePlayback'
-import { RecoveryPanel } from '../recoveries/RecoveryPanel'
+import { MatchAnalysisPanel } from '../statistics/MatchAnalysisPanel'
 import { recoveryCopy } from '../recoveries/copy'
 import type { DemoScenario } from '../../types/recoveries'
 
@@ -112,7 +112,7 @@ function Replay({ data, language, scenario }: { data: DemoMatchResponse; languag
         )}
       </section>
     </div>
-    <RecoveryPanel match={match} second={second} playing={playing} scenario={scenario} language={language} />
+    <MatchAnalysisPanel match={match} second={second} playing={playing} scenario={scenario} language={language} />
     </>
   )
 }

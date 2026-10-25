@@ -1,0 +1,28 @@
+export const statisticsCopy = {
+  es: {
+    title: 'Estadísticas del partido', through: 'Datos hasta', loading: 'Cargando estadísticas…',
+    error: 'No se pudo actualizar el análisis. Los datos visibles corresponden al momento indicado.', retry: 'Reintentar',
+    metric: 'Estadística', possession: 'Posesión', attempted: 'Pases intentados', completed: 'Pases completados',
+    accuracy: 'Precisión de pase', shots: 'Tiros', goals: 'Goles', saved: 'Tiros atajados',
+    offTarget: 'Tiros desviados', blocked: 'Tiros bloqueados', shotDetails: 'Desglose de tiros',
+    control: 'Tiempo de control', contested: 'Balón disputado', outOfPlay: 'Balón fuera de juego',
+    unavailable: 'No hay intervalos de control disponibles para calcular la posesión.',
+    context: 'La posesión describe tiempo de control; la precisión, pases completados. Los tiros describen volumen, sin medir la calidad de las ocasiones.',
+    methodology: 'Cómo se calculan',
+    method: 'Se cuentan las acciones registradas hasta el momento indicado. Posesión = tiempo de control del equipo ÷ tiempo de control de ambos equipos. Se excluyen el balón disputado y el tiempo fuera de juego. Precisión = pases completados ÷ intentados. “—” indica que no hay datos suficientes para calcular el porcentaje.',
+    shotMethod: 'Cada tiro se cuenta una vez como gol, atajado, desviado o bloqueado, según el evento. No se estima xG. El resultado de cada acción se considera disponible en su marca de tiempo registrada.',
+  },
+  en: {
+    title: 'Match statistics', through: 'Data through', loading: 'Loading statistics…',
+    error: 'Analysis could not be updated. Visible data corresponds to the displayed time.', retry: 'Retry',
+    metric: 'Statistic', possession: 'Possession', attempted: 'Passes attempted', completed: 'Passes completed',
+    accuracy: 'Pass accuracy', shots: 'Shots', goals: 'Goals', saved: 'Shots saved',
+    offTarget: 'Shots off target', blocked: 'Shots blocked', shotDetails: 'Shot breakdown',
+    control: 'Controlled time', contested: 'Contested ball', outOfPlay: 'Ball out of play',
+    unavailable: 'No control intervals are available to calculate possession.',
+    context: 'Possession describes controlled time; accuracy describes pass completion. Shots describe volume without measuring chance quality.',
+    methodology: 'How these are calculated',
+    method: 'Actions are counted through the displayed time. Possession = team controlled time ÷ both teams’ controlled time. Contested and out-of-play time are excluded. Accuracy = completed ÷ attempted passes. “—” means there is insufficient data to calculate the percentage.',
+    shotMethod: 'Each shot is counted once as a goal, saved, off target or blocked, according to its event. No xG is estimated. Each action’s outcome is treated as available at its recorded timestamp.',
+  },
+} as const
