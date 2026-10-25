@@ -18,7 +18,8 @@ Use the Hobby plan and the provided `vercel.app` domains. This setup does not en
 - Root `main.py` exposes the existing `app.main.app` through a location Vercel recognizes. It adds `backend/` to Python's import path, equivalent to running from that folder locally. It does not start a separate Uvicorn server inside a function.
 - Root `requirements.txt` lists the Python dependencies directly for Vercel. `backend/requirements.txt` includes that list for local pip installs, so there is one dependency list. The root file must remain flat: the Vercel deployment rejected an included requirements file.
 - `.python-version` selects Python 3.12.
-- Root `vercel.json` selects FastAPI and excludes `frontend/**` from the Python function. The backend code and `data/synthetic/` remain inside the project root and the function bundle; no generated JSON needs to be duplicated or downloaded at runtime.
+- Root `vercel.json` excludes `frontend/**` from the Python function. It does not force a framework across the repository; the API project's FastAPI preset and recognized root `main.py` select the backend. The backend code and `data/synthetic/` remain inside the project root and the function bundle; no generated JSON needs to be duplicated or downloaded at runtime.
+- `frontend/vercel.json` selects Vite for the frontend project, whose Root Directory must be `frontend`. Each project must read the configuration associated with its own root.
 - `frontend/src/services/api.ts` shares the API origin between health, match and analysis requests. It removes whitespace and trailing slashes. The variable is read by Vite at **build time**.
 
 The existing frontend project must keep `frontend` as its Root Directory. The repository-root FastAPI configuration is for the separate API project, whose Root Directory is `./`. Running `uvicorn app.main:app --reload` inside `backend/` still works locally.
@@ -51,7 +52,7 @@ In the **frontend** Vercel project, add this variable for **Production**:
 VITE_API_BASE_URL=https://YOUR-API.vercel.app
 ```
 
-Use only the API origin, without `/api`, `/docs` or a frontend domain. No key or token is needed. Open **Deployments** and rebuild/redeploy a `phase1-foundation` deployment after saving. Vite embeds the value during the build, so changing the variable alone cannot update an already built frontend.
+Choose the **Config** variable type, not **Secret**. The `VITE_` prefix makes this API origin public in the browser, which is necessary for frontend requests; it must never contain credentials. Use only the API origin, without `/api`, `/docs` or a frontend domain. No key or token is needed. Open **Deployments** and rebuild/redeploy a `phase1-foundation` deployment after saving. Vite embeds the value during the build, so changing the variable alone cannot update an already built frontend.
 
 Changing `BACKEND_CORS_ORIGINS` likewise requires a new API deployment to apply the value in the function environment.
 
@@ -75,6 +76,7 @@ A function can need extra startup time on its first request. Replay itself runs 
 | --- | --- |
 | `frontend` directory not found / only initial commit | Deployment Source must be `phase1-foundation`, not the old `main` commit. |
 | API build tries Vite / asks for `dist` | API project must use FastAPI and root `./`, with no old frontend command overrides. |
+| Frontend build reports `No FastAPI entrypoint found` | Frontend project must use root `frontend` and Vite. Deploy the commit containing `frontend/vercel.json` and the root configuration without a forced FastAPI framework. Redeploying an older commit repeats its old configuration. |
 | API import error or cannot find dependencies | Confirm root `main.py`, `requirements.txt`, `.python-version`, and `backend/app/` are in the deployed commit. Read Build Logs / Function Logs. |
 | Original match returns 503 | Verify root includes `data/synthetic/circulation-vs-counterattack.json`; do not set the API Root Directory to `backend`. |
 | API health works, frontend fetch fails | Check the frontend build-time API URL, exact frontend origin in API CORS, deployment protection, and whether both deployments were recreated after variable changes. |
