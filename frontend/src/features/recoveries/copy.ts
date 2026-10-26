@@ -1,7 +1,7 @@
 export const recoveryCopy = {
   en: {
     scenario: 'Scenario',
-    scenarios: { higher_recoveries: 'More high recoveries', stable: 'Stable recoveries', recoveries_without_shots: 'More recoveries, no shots', original: 'Circulation vs counterattack' },
+    scenarios: { varied: 'Varied match', higher_recoveries: 'More high recoveries', stable: 'Stable recoveries', recoveries_without_shots: 'More recoveries, no shots', original: 'Circulation vs counterattack' },
     title: 'From recovery to attack',
     evidence: 'Evidence and interpretation limits',
     waitingTitle: 'Explore the analysis',
@@ -33,7 +33,7 @@ export const recoveryCopy = {
   },
   es: {
     scenario: 'Escenario',
-    scenarios: { higher_recoveries: 'Más recuperaciones adelantadas', stable: 'Recuperaciones estables', recoveries_without_shots: 'Más recuperaciones, sin tiros', original: 'Circulación contra contraataque' },
+    scenarios: { varied: 'Partido variado', higher_recoveries: 'Más recuperaciones adelantadas', stable: 'Recuperaciones estables', recoveries_without_shots: 'Más recuperaciones, sin tiros', original: 'Circulación contra contraataque' },
     title: 'De la recuperación al ataque',
     evidence: 'Evidencia y límites de interpretación',
     waitingTitle: 'Explora el análisis',

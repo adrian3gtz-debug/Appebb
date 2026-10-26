@@ -45,7 +45,17 @@ Run `npm test` and `npm run build` in `frontend/`. In `backend/`, install `requi
 
 ## Generate a synthetic match
 
-With the backend virtual environment active, run from `backend/`:
+The exploratory demo now uses a **Varied match** with state-dependent possessions, variable durations and sampled outcomes. Its parameters are explicit assumptions, not fitted professional football rates. The older authored scenarios remain available as regression examples. Read [the varied-generator methodology and diagnostic results](docs/varied-synthetic-matches.md).
+
+To generate and audit a varied match from `backend/`:
+
+```powershell
+python -m app.services.generate_match --mode varied --seed 7 --audit --output ../data/synthetic/varied-7.json
+```
+
+The same seed and generator version reproduce the same sequence; different seeds can change actions, timing and results. Diagnostics check structural continuity and summarize distributions without assigning a realism score.
+
+To reproduce the original authored circulation/counterattack fixture, run from `backend/` with the virtual environment active:
 
 ```powershell
 python -m app.services.generate_match --seed 19 --output ../data/synthetic/example-19.json
@@ -72,7 +82,7 @@ Code: `backend/app/api/matches.py` exposes the endpoint, `backend/app/services/m
 
 ## Inspect recovery-to-attack evidence
 
-The default scenario is **More high recoveries**. Under **From recovery to attack**, choose **View comparison at 20:00** (seeking pauses playback). The first comparison shows high recoveries increasing from **1 to 6**, with **3** of the later-window sequences reaching a shot before the interval closed. These are synthetic scenario outputs. Select **12:15** on the pitch/list to inspect its recorded actions. Open **Evidence and interpretation limits** for interval counts, definitions and limitations. Before the second half's first comparison, the shortcut correctly targets **65:00**.
+Select **More high recoveries** for an authored recovery example. Under **From recovery to attack**, choose **View comparison at 20:00** (seeking pauses playback). This example's first comparison shows high recoveries increasing from **1 to 6**, with **3** of the later-window sequences reaching a shot before the interval closed. These are synthetic scenario outputs. Select **12:15** on the pitch/list to inspect its recorded actions. Open **Evidence and interpretation limits** for interval counts, definitions and limitations. Before the second half's first comparison, the shortcut correctly targets **65:00**. The default **Varied match** does not guarantee any highlight.
 
 Switch to **Stable recoveries** for a no-highlight counterexample, or **More recoveries, no shots** for an increase without resulting shots. **Circulation vs counterattack** preserves the original fixture. Changing the test match resets playback. All controls, evidence explanations and labels support EN/ES.
 

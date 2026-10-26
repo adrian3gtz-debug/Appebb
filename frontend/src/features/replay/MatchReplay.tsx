@@ -14,7 +14,7 @@ const buttonStyle = 'rounded-lg border border-[#c8d6c9] px-5 py-2.5 font-medium 
 type LoadState = { status: 'loading' } | { status: 'error' } | { status: 'ready'; data: DemoMatchResponse }
 
 export function MatchReplay({ language }: { language: Language }) {
-  const [scenario, setScenario] = useState<DemoScenario>('higher_recoveries')
+  const [scenario, setScenario] = useState<DemoScenario>('varied')
   const copy = recoveryCopy[language]
   return <>
     <label className="mt-4 flex flex-wrap items-center gap-2 text-sm font-medium">

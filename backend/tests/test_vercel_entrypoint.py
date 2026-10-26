@@ -36,6 +36,10 @@ assert len(fixture.json()['match']['events']) == 694
 analysis = client.get('/api/matches/demo/recoveries?scenario=higher_recoveries&second=1200')
 assert analysis.status_code == 200
 assert analysis.json()['insights'][0]['current']['shot_sequences'] == 3
+varied = client.get('/api/matches/demo/analysis?scenario=varied&second=1200')
+assert varied.status_code == 200
+assert varied.json()['statistics']['as_of_second'] == 1200
+assert varied.json()['source'] == 'synthetic'
 assert client.get('/docs').status_code == 200
 '''
     result = subprocess.run([sys.executable, '-c', script], cwd=tmp_path, env=environment,

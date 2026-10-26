@@ -1,4 +1,4 @@
-export type DemoScenario = 'original' | 'stable' | 'higher_recoveries' | 'recoveries_without_shots'
+export type DemoScenario = 'original' | 'stable' | 'higher_recoveries' | 'recoveries_without_shots' | 'varied'
 export interface RecoverySequence {
   recovery_event_id: string
   team_id: string

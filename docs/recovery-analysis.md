@@ -60,7 +60,7 @@ These fixtures test detection and counterexamples, not population realism. Regul
 
 - `GET /api/matches/demo?scenario=higher_recoveries`: full validated synthetic match.
 - `GET /api/matches/demo/recoveries?scenario=higher_recoveries&second=1200`: evidence through 20:00.
-- Other selections: `stable`, `recoveries_without_shots`, `original`. The API defaults to `original` for compatibility; the UI starts with `higher_recoveries` to demonstrate analysis.
+- Other selections: `stable`, `recoveries_without_shots`, `original`, `varied`. The API defaults to `original` for compatibility; the UI starts with `varied` for exploration. Select `higher_recoveries` for the guaranteed authored contrast. See [the varied generator](varied-synthetic-matches.md).
 - Invalid selections/times return 422; unreadable/invalid original fixture returns 503.
 
 The browser requests evidence at most every 500 ms during normal polling, skips unchanged seconds and cancels replaced requests. It displays the actual evidence timestamp. Pausing refreshes the evidence immediately; going backwards hides any future snapshot before the replacement arrives. Changing scenarios resets playback, even though these counterfactual fixtures share a match ID. EN/ES changes preserve the current playback/selection. The timeline slider pauses at the selected second.
