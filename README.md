@@ -2,6 +2,8 @@
 
 From match events to explainable football intelligence.
 
+For project status, collaboration preferences, research decisions and the proposed next stage, start with [the project context and handoff (Spanish)](docs/project-context.md).
+
 This is the foundation for Match Story Engine. It contains a React frontend, FastAPI endpoints, validated match models, possession-time calculation, and browser playback of reproducible synthetic fixtures, and a first recovery-to-attack analysis with inspectable evidence. AI provider integration is planned for a later stage.
 
 ## Requirements
