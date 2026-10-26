@@ -9,7 +9,7 @@ describe('playback clock', () => {
   it('starts paused and does not advance until started', () => {
     expect(playbackReducer(initialPlayback, { type: 'tick', elapsed: 10, duration: 5400 })).toEqual(initialPlayback)
     const playing = playbackReducer(initialPlayback, { type: 'toggle', duration: 5400 })
-    expect(playbackReducer(playing, { type: 'tick', elapsed: 2, duration: 5400 }).second).toBe(120)
+    expect(playbackReducer(playing, { type: 'tick', elapsed: 2, duration: 5400 }).second).toBe(60)
   })
   it('pauses, resumes and changes speed without resetting time', () => {
     let state = { second: 600, speed: 60, playing: true }
@@ -25,7 +25,7 @@ describe('playback clock', () => {
     const ended = playbackReducer({ second: 5399, speed: 60, playing: true }, { type: 'tick', elapsed: 2, duration: 5400 })
     expect(ended).toEqual({ second: 5400, speed: 60, playing: false })
     expect(playbackReducer(ended, { type: 'toggle', duration: 5400 })).toEqual(ended)
-    expect(playbackReducer(ended, { type: 'reset' })).toEqual(initialPlayback)
+    expect(playbackReducer(ended, { type: 'reset' })).toEqual({ ...initialPlayback, speed: 60 })
   })
   it('resets during play, preserving the chosen speed', () => {
     expect(playbackReducer({ second: 400, speed: 10, playing: true }, { type: 'reset' })).toEqual({ second: 0, speed: 10, playing: false })

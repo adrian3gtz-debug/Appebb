@@ -64,7 +64,7 @@ All generated match data is synthetic and must be identified as such.
 
 `GET /api/matches/demo` loads and validates the included fixture with Pydantic. Its response includes `source: "synthetic"`, `duration_seconds: 5400`, and the full match. Missing or invalid fixture files return HTTP 503.
 
-The browser downloads the full match once and starts paused at 00:00. Use Play/Pause, Restart, and the 1×/10×/30×/60× speed selector. The default 60× plays the 90-minute match in 90 seconds, excluding pauses. The scoreboard and latest eight events are derived only from events at or before the playback clock. Restart clears the visible progress and pauses, preserving speed. Playback stops at 90:00. The second half begins at 45:00 without a halftime break; this fixture has no added time. Changing EN/ES preserves playback.
+The browser downloads the full match once and starts paused at 00:00. Use Play/Pause, Restart, and the 1×/10×/30×/60× speed selector. The default 30× plays the 90-minute match in three minutes, excluding pauses. The compact controls stay visible while scrolling. The scoreboard and latest eight events are derived only from events at or before the playback clock. Restart clears the visible progress and pauses, preserving speed. Playback stops at 90:00. The second half begins at 45:00 without a halftime break; this fixture has no added time. Changing EN/ES preserves playback.
 
 This is local playback of a recorded synthetic sequence, not server-side live ingestion or a new match generated on every play. The fixture is delivered in full, so future events can be inspected in the network response even though the UI hides them. Timing uses elapsed browser time; after a background-tab delay the next update may catch up.
 
@@ -72,7 +72,7 @@ Code: `backend/app/api/matches.py` exposes the endpoint, `backend/app/services/m
 
 ## Inspect recovery-to-attack evidence
 
-The new default test match is **More high recoveries**. Move the timeline to **20:00** (seeking pauses playback), then scroll to **From recovery to attack**. The first comparison shows high recoveries increasing from **1 to 6**, with **3** of the later-window sequences reaching a shot before the interval closed. These are synthetic scenario outputs. Select **12:15** on the pitch/list to inspect its recorded actions.
+The default scenario is **More high recoveries**. Under **From recovery to attack**, choose **View comparison at 20:00** (seeking pauses playback). The first comparison shows high recoveries increasing from **1 to 6**, with **3** of the later-window sequences reaching a shot before the interval closed. These are synthetic scenario outputs. Select **12:15** on the pitch/list to inspect its recorded actions. Open **Evidence and interpretation limits** for interval counts, definitions and limitations. Before the second half's first comparison, the shortcut correctly targets **65:00**.
 
 Switch to **Stable recoveries** for a no-highlight counterexample, or **More recoveries, no shots** for an increase without resulting shots. **Circulation vs counterattack** preserves the original fixture. Changing the test match resets playback. All controls, evidence explanations and labels support EN/ES.
 
@@ -80,7 +80,7 @@ The API computes evidence through the requested second at `/api/matches/demo/rec
 
 ## Inspect match statistics
 
-The **Match statistics / Estadísticas del partido** panel shows possession, attempted/completed passes, accuracy, shots and goals through the displayed analysis time. Expand the shot breakdown and calculation notes to inspect outcomes and controlled/contested/out-of-play time. Missing percentages display `—` rather than zero.
+Open **Match statistics / Estadísticas del partido** below the main analysis to see possession, attempted/completed passes, accuracy, shots and goals through the displayed analysis time. Expand the shot breakdown and calculation notes to inspect outcomes and controlled/contested/out-of-play time. Missing percentages display `—` rather than zero. **Latest events / Últimos eventos** is a separate expandable section. A single notice identifies all teams and players as fictional; compact display names preserve the original records.
 
 Statistics and recovery evidence share `/api/matches/demo/analysis?scenario=original&second=1200`, avoiding a second polling loop. Pausing or seeking updates the cutoff; future counts are hidden when rewinding. Try **Circulation vs counterattack** at 90:00 to inspect higher possession alongside fewer shots and a defeat. These remain authored synthetic outcomes.
 

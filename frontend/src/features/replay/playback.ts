@@ -1,7 +1,7 @@
 import type { Match } from '../../types/match'
 
 export interface PlaybackState { second: number; playing: boolean; speed: number }
-export const initialPlayback: PlaybackState = { second: 0, playing: false, speed: 60 }
+export const initialPlayback: PlaybackState = { second: 0, playing: false, speed: 30 }
 export type PlaybackAction =
   | { type: 'toggle'; duration: number }
   | { type: 'tick'; elapsed: number; duration: number }

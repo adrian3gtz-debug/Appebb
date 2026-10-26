@@ -6,6 +6,7 @@ import type { DemoMatchResponse } from '../../types/match'
 import { formatClock, matchAt } from './playback'
 import { usePlayback } from './usePlayback'
 import { MatchAnalysisPanel } from '../statistics/MatchAnalysisPanel'
+import { teamLabel } from './displayNames'
 import { recoveryCopy } from '../recoveries/copy'
 import type { DemoScenario } from '../../types/recoveries'
 
@@ -16,9 +17,9 @@ export function MatchReplay({ language }: { language: Language }) {
   const [scenario, setScenario] = useState<DemoScenario>('higher_recoveries')
   const copy = recoveryCopy[language]
   return <>
-    <label className="mt-6 flex flex-wrap items-center gap-3 font-medium">
+    <label className="mt-4 flex flex-wrap items-center gap-2 text-sm font-medium">
       {copy.scenario}
-      <select className="max-w-full rounded-lg border border-[#c8d6c9] bg-white px-3 py-2.5" value={scenario} onChange={(event) => setScenario(event.target.value as DemoScenario)}>
+      <select className="min-w-0 max-w-full rounded-lg border border-[#c8d6c9] bg-white px-3 py-2" value={scenario} onChange={(event) => setScenario(event.target.value as DemoScenario)}>
         {(Object.keys(copy.scenarios) as DemoScenario[]).map((option) => <option key={option} value={option}>{copy.scenarios[option]}</option>)}
       </select>
     </label>
@@ -57,62 +58,36 @@ function Replay({ data, language, scenario }: { data: DemoMatchResponse; languag
   const copy = translations[language]
   const { homeScore, awayScore, recentEvents } = matchAt(match, second)
   const finished = second >= duration
-  const teams = [match.home_team, match.away_team]
   const periodLabel = finished ? copy.finished : second < 2700 ? copy.firstHalf : copy.secondHalf
 
-  return (
-    <>
-    <div className="mt-8 grid items-start gap-8 lg:grid-cols-[1.1fr_1fr]">
-      <section aria-label={copy.replayTitle} className="rounded-2xl border border-[#dce5db] bg-white p-5 sm:p-8">
-        <div className="flex justify-between gap-3 text-sm text-[#53675b]">
-          <span>{periodLabel}</span>
-          <span>{finished ? copy.finished : playing ? copy.playing : copy.paused}</span>
-        </div>
-        <div className="mt-10 grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-center">
-          <h2 className="break-words text-lg font-semibold">{match.home_team.name}</h2>
-          <p className="whitespace-nowrap text-4xl font-semibold tabular-nums sm:text-5xl">{homeScore} – {awayScore}</p>
-          <h2 className="break-words text-lg font-semibold">{match.away_team.name}</h2>
-        </div>
-        <p className="my-8 text-center text-3xl tabular-nums">{formatClock(second)}</p>
-        <label className="block text-sm text-[#53675b]">
-          {copy.progress}
-          <input type="range" min={0} max={duration} step={1} value={Math.floor(second)} aria-valuetext={formatClock(second)} onChange={(event) => dispatch({ type: 'seek', second: Number(event.target.value), duration })} className="mt-2 w-full accent-[#205c41]" />
+  return <>
+    <section aria-label={copy.replayTitle} className="mt-4 rounded-t-2xl border border-b-0 border-[#dce5db] bg-white px-4 py-4 sm:px-6">
+      <div className="mb-3 flex items-center justify-between text-xs text-[#53675b] sm:text-sm">
+        <span>{periodLabel}</span><span>{finished ? copy.finished : playing ? copy.playing : copy.paused}</span>
+      </div>
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-center">
+        <h2 className="break-words text-base font-semibold sm:text-xl">{teamLabel(match.home_team.name)}</h2>
+        <p className="whitespace-nowrap text-3xl font-semibold tabular-nums sm:text-4xl">{homeScore} – {awayScore}</p>
+        <h2 className="break-words text-base font-semibold sm:text-xl">{teamLabel(match.away_team.name)}</h2>
+      </div>
+    </section>
+    <div className="sticky top-0 z-20 rounded-b-2xl border border-[#dce5db] bg-white px-3 py-3 shadow-sm sm:px-6" role="group" aria-label={copy.progress}>
+      <div className="flex items-center gap-2 sm:gap-3">
+        <button className="min-h-11 rounded-lg bg-[#205c41] px-3 text-sm font-medium text-white hover:bg-[#184732] disabled:opacity-50 sm:px-5" disabled={finished} onClick={() => dispatch({ type: 'toggle', duration })}>{playing ? copy.pause : copy.play}</button>
+        <button className="min-h-11 rounded-lg border border-[#c8d6c9] px-3 text-sm font-medium hover:bg-[#e8f0e8]" onClick={() => dispatch({ type: 'reset' })}>{copy.reset}</button>
+        <label className="flex min-w-0 items-center gap-2 text-sm">
+          <span className="sr-only sm:not-sr-only">{copy.speed}</span>
+          <select className="min-h-11 rounded-lg border border-[#c8d6c9] bg-white px-1.5" value={speed} onChange={(event) => dispatch({ type: 'speed', speed: Number(event.target.value) })}>
+            {[1, 10, 30, 60].map((value) => <option key={value} value={value}>{value}×</option>)}
+          </select>
         </label>
-        <div className="mt-7 flex flex-wrap items-center gap-3">
-          <button className="rounded-lg bg-[#205c41] px-5 py-2.5 font-medium text-white hover:bg-[#184732] disabled:cursor-not-allowed disabled:opacity-50" disabled={finished} onClick={() => dispatch({ type: 'toggle', duration })}>{playing ? copy.pause : copy.play}</button>
-          <button className={buttonStyle} onClick={() => dispatch({ type: 'reset' })}>{copy.reset}</button>
-          <label className="flex items-center gap-2 text-sm">
-            {copy.speed}
-            <select className="rounded-lg border border-[#c8d6c9] bg-white px-2 py-2.5" value={speed} onChange={(event) => dispatch({ type: 'speed', speed: Number(event.target.value) })}>
-              {[1, 10, 30, 60].map((value) => <option key={value} value={value}>{value}×</option>)}
-            </select>
-          </label>
-        </div>
-        <p className="mt-6 text-sm leading-6 text-[#53675b]">{copy.demoHelp}</p>
-      </section>
-      <section aria-label={copy.latestEvents} className="rounded-2xl border border-[#dce5db] bg-white p-5 sm:p-8">
-        <h2 className="text-xl font-semibold">{copy.latestEvents}</h2>
-        {recentEvents.length === 0 ? <p className="py-8 text-[#53675b]">{copy.noEvents}</p> : (
-          <ol className="mt-4 divide-y divide-[#e5ebe3]">
-            {recentEvents.map((event) => {
-              const team = teams.find((item) => item.id === event.team_id)!
-              const player = team.players.find((item) => item.id === event.player_id)!
-              const outcome = event.type === 'pass' || event.type === 'shot' ? copy.outcomes[event.outcome] : null
-              return (
-                <li key={event.id} className="flex gap-4 py-3">
-                  <span className="pt-0.5 text-sm tabular-nums text-[#53675b]">{formatClock(event.second)}</span>
-                  <div>
-                    <p className="font-medium">{copy.events[event.type]}{outcome && ` · ${outcome}`}</p>
-                    <p className="mt-1 text-sm text-[#53675b]">{player.name} · {team.name}</p>
-                  </div>
-                </li>
-              )
-            })}
-          </ol>
-        )}
-      </section>
+        <p className="ml-auto text-lg font-semibold tabular-nums sm:text-xl">{formatClock(second)}</p>
+      </div>
+      <label className="mt-2 block">
+        <span className="sr-only">{copy.progress}</span>
+        <input type="range" min={0} max={duration} step={1} value={Math.floor(second)} aria-valuetext={formatClock(second)} onChange={(event) => dispatch({ type: 'seek', second: Number(event.target.value), duration })} className="block h-6 w-full accent-[#205c41]" />
+      </label>
     </div>
-    <MatchAnalysisPanel match={match} second={second} playing={playing} scenario={scenario} language={language} />
-    </>
-  )
+    <MatchAnalysisPanel match={match} second={second} playing={playing} scenario={scenario} language={language} recentEvents={recentEvents} onSeek={(target) => dispatch({ type: 'seek', second: target, duration })} />
+  </>
 }
