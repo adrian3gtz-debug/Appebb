@@ -2,6 +2,12 @@
 
 The models in `backend/app/models/` define the common format for synthetic match data. They validate input before generation, analysis, or API presentation. They are not database tables. Later adapters may translate real provider data into this format.
 
+The first Wyscout reference import uses a separate common observation layer in
+`backend/app/reference/`, described in [reference validation](reference-validation.md).
+It preserves period clocks, unknown actors/outcomes and provider IDs without
+forcing real records into this synthetic contract. Real replay requires a
+versioned contract migration; its design constraints are documented there.
+
 ## Match and field conventions
 
 - A match has one home team and one away team. Each team has 11 players, including exactly one goalkeeper.
@@ -32,6 +38,11 @@ Every event contains `id`, `match_id`, `type`, `period`, `second`, `team_id`, `p
 | `recovery` | `method` | Gaining possession by `interception`, `tackle`, `loose_ball`, or `goalkeeper_claim`. |
 | `pressure` | `target_player_id` | A recorded pressure action against a player on the team in possession. It does not, alone, establish a team-wide pressing pattern. |
 | `shot` | `outcome` | `goal`, `saved`, `off_target`, or `blocked`. No expected-goals value is assigned. |
+
+Passes additionally accept optional `pass_context`: `open_play`, `kickoff`,
+`throw_in`, `goal_kick`, `corner` or `free_kick`. Null/absent means unknown in older
+fixtures; V2 supplies context on every pass. A restart labels only the first pass,
+and remains part of the attempted-pass statistics. See [V2 methodology](generator-refinement.md).
 
 An illustrative sequence has an away possession with home pressure, followed by a home recovery with a new possession ID, a completed pass, a carry, and a saved shot. The corresponding validation example is in `backend/tests/test_match_models.py`. It is an example of structure, not a real match or a generated scenario.
 

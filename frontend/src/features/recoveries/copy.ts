@@ -30,6 +30,7 @@ export const recoveryCopy = {
     pitch: 'Recovery locations and selected possession', recovery: 'Recovery', pass: 'Pass', carry: 'Carry', shot: 'Shot location',
     pitchHelp: 'Select a recovery marker or a sequence below. Lines show recorded passes and carries; markers do not represent all players.',
     selected: 'Selected possession', event: 'Event',
+    recordedActions: 'Recorded actions',
   },
   es: {
     scenario: 'Escenario',
@@ -62,5 +63,6 @@ export const recoveryCopy = {
     pitch: 'Ubicación de recuperaciones y posesión seleccionada', recovery: 'Recuperación', pass: 'Pase', carry: 'Conducción', shot: 'Ubicación del tiro',
     pitchHelp: 'Selecciona una recuperación en la cancha o en la lista. Las líneas muestran pases y conducciones registrados; los puntos no representan a todos los jugadores.',
     selected: 'Posesión seleccionada', event: 'Evento',
+    recordedActions: 'Acciones registradas',
   },
 } as const

@@ -13,7 +13,7 @@ from app.analytics.statistics import calculate_statistics
 from app.main import app
 from app.models import Match, PassEvent, PressureEvent, ShotEvent
 from app.services.synthetic_audit import audit_match
-from app.services.varied_generator import generate_varied_match
+from app.services.varied_generator import GENERATOR_VERSION, generate_varied_match
 
 
 def test_reproducibility_and_seed_affects_more_than_coordinates():
@@ -127,7 +127,7 @@ def test_cli_generates_varied_fixture_and_reports_diagnostics_without_overwritin
     result = subprocess.run(command, capture_output=True, text=True, check=True)
     assert Match.model_validate_json(output.read_bytes()) == generate_varied_match(7)
     summary = json.loads(result.stdout)
-    assert summary['generation'] == {'version': 'varied-v1', 'seed': 7, 'calibrated': False}
+    assert summary['generation'] == {'version': GENERATOR_VERSION, 'seed': 7, 'calibrated': False}
     assert summary['diagnostics']['structural_issues'] == []
     original = output.read_bytes()
     assert subprocess.run(command, capture_output=True).returncode != 0

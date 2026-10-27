@@ -26,6 +26,14 @@ def audit_match(match: Match) -> dict:
 
     for index, event in enumerate(actions):
         following = actions[index + 1] if index + 1 < len(actions) else None
+        if isinstance(event, PassEvent) and event.pass_context not in (None, "open_play"):
+            previous = actions[index - 1] if index else None
+            if previous and previous.possession_id == event.possession_id:
+                issue(event.id, "restart_does_not_start_possession")
+            if event.pass_context == "kickoff" and (event.location.x, event.location.y) != (50, 50):
+                issue(event.id, "kickoff_not_at_centre")
+            if event.pass_context == "throw_in" and event.location.y not in (0, 100):
+                issue(event.id, "throw_in_not_at_touchline")
         if isinstance(event, (PassEvent, CarryEvent)):
             end = following.second if following and following.period == event.period else event.period * 2700
             elapsed = end - event.second

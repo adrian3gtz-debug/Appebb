@@ -19,6 +19,7 @@ export const translations = {
     latestEvents: 'Latest events', noEvents: 'Press Play to see the first events.',
     demoHelp: 'Choose a speed or move the timeline to inspect a moment. Playback starts at 30×.',
     events: { pass: 'Pass', carry: 'Carry', recovery: 'Recovery', pressure: 'Pressure', shot: 'Shot' },
+    passContexts: { kickoff: 'Kick-off', throw_in: 'Throw-in', goal_kick: 'Goal kick', corner: 'Corner', free_kick: 'Free kick' },
     outcomes: { complete: 'Completed', incomplete: 'Incomplete', goal: 'Goal', saved: 'Saved', off_target: 'Off target', blocked: 'Blocked' },
   },
   es: {
@@ -37,6 +38,7 @@ export const translations = {
     latestEvents: 'Últimos eventos', noEvents: 'Pulsa Iniciar para ver los primeros eventos.',
     demoHelp: 'Elige la velocidad o mueve la línea de tiempo para explorar un momento. La reproducción comienza a 30×.',
     events: { pass: 'Pase', carry: 'Conducción', recovery: 'Recuperación', pressure: 'Presión', shot: 'Tiro' },
+    passContexts: { kickoff: 'Saque inicial', throw_in: 'Saque de banda', goal_kick: 'Saque de portería', corner: 'Córner', free_kick: 'Tiro libre' },
     outcomes: { complete: 'Completado', incomplete: 'Incompleto', goal: 'Gol', saved: 'Atajado', off_target: 'Fuera de portería', blocked: 'Bloqueado' },
   },
 } as const

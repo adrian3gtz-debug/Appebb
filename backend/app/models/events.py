@@ -43,6 +43,8 @@ class PassEvent(BaseEvent):
     end_location: Coordinate
     outcome: Literal["complete", "incomplete"]
     receiver_id: str | None = None
+    # None preserves uncertainty in legacy fixtures; new generators set context.
+    pass_context: Literal["open_play", "kickoff", "throw_in", "goal_kick", "corner", "free_kick"] | None = None
 
     @model_validator(mode="after")
     def check_receiver(self) -> PassEvent:

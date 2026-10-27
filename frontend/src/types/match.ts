@@ -17,7 +17,8 @@ interface BaseEvent {
   location: Coordinate
 }
 export type MatchEvent = BaseEvent & (
-  | { type: 'pass'; end_location: Coordinate; outcome: 'complete' | 'incomplete'; receiver_id: string | null }
+  | { type: 'pass'; end_location: Coordinate; outcome: 'complete' | 'incomplete'; receiver_id: string | null;
+      pass_context?: 'open_play' | 'kickoff' | 'throw_in' | 'goal_kick' | 'corner' | 'free_kick' | null }
   | { type: 'carry'; end_location: Coordinate }
   | { type: 'recovery'; method: 'interception' | 'tackle' | 'loose_ball' | 'goalkeeper_claim' }
   | { type: 'pressure'; target_player_id: string }

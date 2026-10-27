@@ -1,4 +1,9 @@
-# Varied synthetic matches — version 1
+# Varied synthetic matches — versions 1 and 2
+
+The current demo is **varied-v2**. It adds explicit pass/restart contexts and changes
+the base pass-failure assumption from 0.04 to 0.075 after a Wyscout EPL 2017/18
+comparison. V1 remains reproducible. Read [the experiment, evaluation and replay
+verification](generator-refinement.md); the seed results below are historical V1.
 
 This generator replaces fixed-length blocks for the exploratory demo. It produces a seeded sequence of linked possessions with variable duration and outcomes. It is **not calibrated to professional match distributions**. The older authored fixtures remain regression tests, with their existing expected results.
 
@@ -21,7 +26,9 @@ Transitions have sampled durations, rather than advancing in equal blocks. Actio
 
 ## Explicit assumptions, not fitted football rates
 
-The implementation is `backend/app/services/varied_generator.py`, version `varied-v1`. These defaults are engineering assumptions for coherent synthetic examples:
+The implementation is `backend/app/services/varied_generator.py`, default version
+`varied-v2`. These remain engineering assumptions; the base failure change is
+informed by the limited historical comparison linked above:
 
 | Choice | Current rule |
 | --- | --- |
@@ -29,7 +36,7 @@ The implementation is `backend/app/services/varied_generator.py`, version `varie
 | Team tendencies | Directness weight sampled in 0.35–0.65; pressure-action tendency in 0.12–0.30. They do not describe real teams. |
 | Forward choice | Base probability 0.40 for circulation, 0.78 for transition, 0.66 otherwise; space near the goal lines changes these choices. Some passes explicitly select near-lateral movement. |
 | Travel time | Distance / sampled speed, rounded up, plus variable decision time. Carry speeds sampled in 3.5–6.5 m/s; pass speeds in 12–23 m/s. These are simulation inputs, not measured physical quantities. |
-| Pass failure | `0.04 + assumed_distance_m / 260 + 0.10 if pressured + 0.05 if destination is beyond attacking x=65`. This is a heuristic, not a pass-completion model trained on data. |
+| Pass failure | `0.075 + assumed_distance_m / 260 + 0.10 if pressured + 0.05 if destination is beyond attacking x=65` (V1 base: `0.04`). This remains a heuristic, not a trained pass-completion model. |
 | Shooting | Possible from attacking x≥68 and within 32 normalized y units of the centre. Choice probabilities rise with x. This omits very long shots and many contextual factors. |
 | Shot outcomes | Goal weight depends on x and lateral position, bounded to 0.025–0.14; other outcomes are sampled from explicit weights. These weights are **not xG**, are not returned as chance-quality estimates, and have no scientific validation. |
 | Interruption time | Sampled throw-in, goalkeeper-restart, goal-celebration and contested intervals. No fouls, offside, substitutions or injury stoppages. |
@@ -48,7 +55,7 @@ The schema treats an action's result as available at its recorded timestamp, whi
 
 An empty `structural_issues` list means that these specific checks passed. It is not a realism certificate. A schema-invalid match fails Pydantic validation before the audit. `calibrated_to_real_data` is explicitly false.
 
-For seeds 0–19 in this version, the inspected outputs were:
+For seeds 0–19 in **V1**, the inspected outputs were:
 
 | Per-match quantity | Minimum | Median | Maximum |
 | --- | ---: | ---: | ---: |
@@ -57,9 +64,9 @@ For seeds 0–19 in this version, the inspected outputs were:
 | Goals, both teams | 0 | 1 | 4 |
 | Home possession share (%) | 38.53 | 51.71 | 57.98 |
 
-These are **synthetic outputs**, not acceptance ranges or empirical football benchmarks. All twenty matches passed the implemented structural checks. The tests also find home wins, away wins and draws across seeds, while retaining reproducibility for a fixed seed and version. For seed 7, controlled spells range from 3 to 198 seconds, and passes per recorded possession from 1 to 24. A short terminal spell may reflect the halftime boundary.
+These are **synthetic outputs**, not acceptance ranges or empirical football benchmarks. All twenty matches passed the implemented structural checks. The tests also find home wins, away wins and draws across seeds, while retaining reproducibility for a fixed seed and version. For seed 7 in V1, controlled spells range from 3 to 198 seconds, and passes per recorded possession from 1 to 24. A short terminal spell may reflect the halftime boundary.
 
-A remaining limitation is effective playing time: with limited interruption types, the generator may keep the ball controlled for too much of the regulation clock. Seed 7 has 4,789 controlled seconds, 78 contested seconds and 533 out-of-play seconds. These values must not be used to claim professional timing realism. Broadening represented stoppages and comparing their distributions to an appropriate dataset are required before calibration claims.
+A remaining limitation is effective playing time: with limited interruption types, the generator may keep the ball controlled for too much of the regulation clock. Seed 7 in V1 has 4,789 controlled seconds, 78 contested seconds and 533 out-of-play seconds. These values must not be used to claim professional timing realism. Broadening represented stoppages and comparing their distributions to an appropriate dataset are required before calibration claims.
 
 ## Running it
 
@@ -77,6 +84,10 @@ The browser now starts with **Varied match / Partido variado**, using seed 7. Th
 
 [Karun Singh's xT explanation](https://karun.in/blog/expected-threat.html) describes modeling movement and shooting choices conditional on location. It informed the state-dependent approach; this generator does not learn xT or fit those transition probabilities.
 
-The [official StatsBomb Open Data repository](https://github.com/hudl/open-data) provides selected competitions, event files and documentation, with separate 360 coverage for selected matches. Its README requires attribution and a logo for published derived analysis; the full [license](https://github.com/hudl/open-data/blob/master/LICENSE.pdf) must be reviewed before dataset use. No real match records, derived reference distributions or trained parameters were imported in this implementation.
+The [official StatsBomb Open Data repository](https://github.com/hudl/open-data) remains a research source. The selected offline reference is Wyscout/Pappalardo EPL 2017/18 under CC BY 4.0; see [reference validation](reference-validation.md). Raw reference files are not committed or served by the demo.
 
-The next calibration task is to choose a representative, permitted reference sample, reconcile coordinate/action/possession definitions, compare distributions and review mismatches. Event feeds alone do not establish exact controlled or contested seconds; timing comparisons need a compatible definition/source. Keep a hold-out set of real matches for evaluation and retain the authored synthetic fixtures as regression tests. This step is still pending.
+The initial comparison and limited V2 adjustment are complete. Missing interruptions,
+longer action gaps, fewer passes and different pass directions remain unresolved.
+Event feeds alone do not establish exact controlled or contested seconds. The 80
+reserved games have now been used for V2 evaluation; repeated adaptive use of these
+results cannot be called fresh independent validation.

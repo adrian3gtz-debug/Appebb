@@ -1,10 +1,20 @@
 # Football Intelligence Lab
 
+### Microsoft Foundry recovery explanations (local integration)
+
+Closed recovery insights offer an explicit **Explain with AI** action in English
+or Spanish, for fans or analysts. The backend builds the evidence and calls an
+Azure OpenAI Responses deployment; regular replay polling never calls the model.
+Match recaps still use deterministic templates. Provider tests use mocks; a real
+backend call and production deployment have not yet been verified.
+See [setup and limitations](docs/foundry-explanations.md), including private backend
+environment variables, response checks and per-worker rate limits.
+
 From match events to explainable football intelligence.
 
 For project status, collaboration preferences, research decisions and the proposed next stage, start with [the project context and handoff (Spanish)](docs/project-context.md).
 
-This is the foundation for Match Story Engine. It contains a React frontend, FastAPI endpoints, validated match models, possession-time calculation, and browser playback of reproducible synthetic fixtures, and a first recovery-to-attack analysis with inspectable evidence. AI provider integration is planned for a later stage.
+This is the foundation for Match Story Engine. It contains a React frontend, FastAPI endpoints, validated match models, possession-time calculation, browser playback of reproducible synthetic fixtures, and recovery-to-attack analysis with inspectable evidence. An optional Foundry adapter is implemented locally; real backend inference still requires private configuration and verification.
 
 ## Requirements
 
@@ -65,6 +75,15 @@ python -m app.services.generate_match --seed 19 --output ../data/synthetic/examp
 
 This writes a new JSON file and prints statistics derived from its events and control intervals. The command refuses to overwrite existing files. Seed 7 is already included at `data/synthetic/circulation-vs-counterattack.json`. This authored scenario demonstrates higher possession with fewer shots and a defeat. It is not calibrated to professional match distributions. See [the scenario documentation](docs/synthetic-scenario.md) for the methodology and limitations.
 
+## Real-data reference validation
+
+The first offline comparison uses Wyscout's complete men's Premier League 2017/18
+season, with 300 matches for diagnosis and 80 reserved for evaluation. Read the
+[reference methodology, contract assessment and reproducible results](docs/reference-validation.md).
+The browser uses `varied-v2`, with explicit restart labels and a limited pass-accuracy
+adjustment. Read the [before/after evaluation and replay verification](docs/generator-refinement.md).
+Pass volume and timing remain unresolved; this is not a calibrated match simulator.
+
 ## Structure
 
 - `frontend/`: React, TypeScript, Vite, Tailwind CSS
@@ -88,9 +107,15 @@ Select **More high recoveries** for an authored recovery example. Under **From r
 
 Switch to **Stable recoveries** for a no-highlight counterexample, or **More recoveries, no shots** for an increase without resulting shots. **Circulation vs counterattack** preserves the original fixture. Changing the test match resets playback. All controls, evidence explanations and labels support EN/ES.
 
-The API computes evidence through the requested second at `/api/matches/demo/recoveries?scenario=higher_recoveries&second=1200`. The UI refreshes analysis separately from the playback clock and displays its evidence timestamp. No AI calls or paid services are involved. Read [the recovery methodology](docs/recovery-analysis.md) for formulas, editable thresholds, sequence termination, incomplete observations, window boundaries and synthetic-data limits.
+The API computes evidence through the requested second at `/api/matches/demo/recoveries?scenario=higher_recoveries&second=1200`. The UI refreshes analysis separately from the playback clock and displays its evidence timestamp. These calculations do not call AI. The separate, optional Explain with AI action consumes provider tokens when configured. Read [the recovery methodology](docs/recovery-analysis.md) for formulas, editable thresholds, sequence termination, incomplete observations, window boundaries and synthetic-data limits.
 
 ## Inspect match statistics
+
+Choose **Casual fan / Analyst** above the replay to change the level of detail.
+The match summary updates through the displayed evidence time and becomes a final
+recap at 90:00. Expand goal evidence to jump to an observed goal. Changing audience
+preserves playback, speed and language; it adds no API polling loop. These summaries
+use calculated facts and text templates. Read the [summary and audience methodology](docs/match-summary.md).
 
 Open **Match statistics / Estadísticas del partido** below the main analysis to see possession, attempted/completed passes, accuracy, shots and goals through the displayed analysis time. Expand the shot breakdown and calculation notes to inspect outcomes and controlled/contested/out-of-play time. Missing percentages display `—` rather than zero. **Latest events / Últimos eventos** is a separate expandable section. A single notice identifies all teams and players as fictional; compact display names preserve the original records.
 

@@ -7,6 +7,7 @@ from pydantic import Field
 from app.models.possession import PossessionSummary
 from app.models.events import Schema
 from app.models.recoveries import RecoveryAnalysis
+from app.models.recap import MatchRecap
 
 
 class TeamStatistics(Schema):
@@ -36,3 +37,4 @@ class MatchAnalysis(Schema):
     as_of_second: int = Field(ge=0, le=5400)
     statistics: MatchStatistics
     recoveries: RecoveryAnalysis
+    recap: MatchRecap

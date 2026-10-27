@@ -1,0 +1,819 @@
+{
+  "methodology": "reference-context-v1",
+  "calibrated": false,
+  "input_sha256": {
+    "events": "301599543aa1a7fa457bb8ef33c9fe860bf81dca65d418d618d68abcda3defad",
+    "matches": "620725c2e6a58b4db3e574ed6c559136477451d81af543f8a06bd85c3da3fe29"
+  },
+  "split_version": "wyscout-epl-2017-18-v1",
+  "held_out_metrics_computed": false,
+  "tuning": {
+    "matches": 300,
+    "pass_context_counts": {
+      "corner": 2854,
+      "free_kick": 6470,
+      "goal_kick": 4414,
+      "throw_in": 12502,
+      "unmarked": 245063
+    },
+    "shot_zones_counts": {
+      "final_third": 6499,
+      "middle_third": 45,
+      "own_third": 1
+    },
+    "per_match": {
+      "ordinary_or_unmarked_passes": {
+        "count": 300,
+        "min": 538,
+        "p25": 736.0,
+        "median": 811.5,
+        "p75": 892.25,
+        "max": 1284
+      },
+      "pass_restarts_marked": {
+        "count": 300,
+        "min": 55,
+        "p25": 80.0,
+        "median": 87.0,
+        "p75": 95.0,
+        "max": 125
+      },
+      "ordinary_pass_accuracy_known_pct": {
+        "count": 300,
+        "min": 66.72862453531599,
+        "p25": 80.17900971749148,
+        "median": 82.62781016880108,
+        "p75": 84.85218159124707,
+        "max": 90.5811623246493
+      },
+      "record_adjacent_pass_gap_median_seconds": {
+        "count": 300,
+        "min": 1.9548050000000785,
+        "p25": 2.3317606249998946,
+        "median": 2.410934750000166,
+        "p75": 2.4962356250001676,
+        "max": 2.7482290000000376
+      },
+      "adjacent_pass_pairs": {
+        "count": 300,
+        "min": 214,
+        "p25": 434.75,
+        "median": 506.0,
+        "p75": 582.25,
+        "max": 998
+      },
+      "shots": {
+        "count": 300,
+        "min": 9,
+        "p25": 19.0,
+        "median": 22.0,
+        "p75": 25.0,
+        "max": 42
+      },
+      "ordinary_pass_forward_pct": {
+        "count": 300,
+        "min": 27.180685358255452,
+        "p25": 32.51244245365186,
+        "median": 34.8245878746997,
+        "p75": 37.63061687584043,
+        "max": 51.11524163568773
+      },
+      "ordinary_pass_backward_pct": {
+        "count": 300,
+        "min": 10.502283105022832,
+        "p25": 13.966355411292216,
+        "median": 15.155180175640172,
+        "p75": 16.331691597099077,
+        "max": 19.87730061349693
+      },
+      "ordinary_pass_lateral_pct": {
+        "count": 300,
+        "min": 35.13011152416357,
+        "p25": 47.115552760921084,
+        "median": 49.78248084012418,
+        "p75": 52.332769244608365,
+        "max": 58.81826320501343
+      }
+    }
+  },
+  "limitations": [
+    "Wyscout unmarked type-8 passes include kickoffs; synthetic open_play excludes explicit kickoffs.",
+    "First 2700 seconds of each half only; no compression of added time.",
+    "Adjacent-record gaps include decision and travel, not measured ball flight or possession duration.",
+    "Synthetic pressure annotations are excluded before adjacency; real duels/touches/interruptions break pairs.",
+    "Direction sectors assume a 105x68m pitch and are diagnostics, not progressive-pass labels.",
+    "Missing fouls, corners and same-team rebounds still limit representation."
+  ],
+  "candidates": {
+    "annotation_only": {
+      "rules": {
+        "pass_failure_base": 0.04,
+        "decision_log_mean": 1.1,
+        "minimum_travel_seconds": 2
+      },
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "structural_issue_count": 0,
+      "summary": {
+        "matches": 20,
+        "pass_context_counts": {
+          "goal_kick": 172,
+          "kickoff": 68,
+          "open_play": 12823,
+          "throw_in": 468
+        },
+        "shot_zones_counts": {
+          "final_third": 452
+        },
+        "per_match": {
+          "ordinary_or_unmarked_passes": {
+            "count": 20,
+            "min": 603,
+            "p25": 612.0,
+            "median": 642.5,
+            "p75": 660.5,
+            "max": 697
+          },
+          "pass_restarts_marked": {
+            "count": 20,
+            "min": 28,
+            "p25": 32.0,
+            "median": 35.5,
+            "p75": 37.75,
+            "max": 45
+          },
+          "ordinary_pass_accuracy_known_pct": {
+            "count": 20,
+            "min": 85.41353383458646,
+            "p25": 86.09894982010806,
+            "median": 86.48670708955224,
+            "p75": 87.0426471603064,
+            "max": 89.58677685950413
+          },
+          "record_adjacent_pass_gap_median_seconds": {
+            "count": 20,
+            "min": 4,
+            "p25": 5.0,
+            "median": 5.0,
+            "p75": 5.0,
+            "max": 5.0
+          },
+          "adjacent_pass_pairs": {
+            "count": 20,
+            "min": 375,
+            "p25": 391.5,
+            "median": 404.0,
+            "p75": 419.25,
+            "max": 448
+          },
+          "shots": {
+            "count": 20,
+            "min": 14,
+            "p25": 20.0,
+            "median": 21.5,
+            "p75": 26.0,
+            "max": 31
+          },
+          "ordinary_pass_forward_pct": {
+            "count": 20,
+            "min": 39.469320066334994,
+            "p25": 41.3474297729871,
+            "median": 41.7401262292548,
+            "p75": 43.82501467997652,
+            "max": 47.447447447447445
+          },
+          "ordinary_pass_backward_pct": {
+            "count": 20,
+            "min": 25.271317829457363,
+            "p25": 26.320006550320496,
+            "median": 26.895901305057095,
+            "p75": 27.705177950069853,
+            "max": 29.31297709923664
+          },
+          "ordinary_pass_lateral_pct": {
+            "count": 20,
+            "min": 25.825825825825827,
+            "p25": 29.26401686709355,
+            "median": 30.436020444763273,
+            "p75": 31.781293419224454,
+            "max": 34.883720930232556
+          }
+        }
+      }
+    },
+    "travel_floor_1": {
+      "rules": {
+        "pass_failure_base": 0.04,
+        "decision_log_mean": 1.1,
+        "minimum_travel_seconds": 1
+      },
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "structural_issue_count": 0,
+      "summary": {
+        "matches": 20,
+        "pass_context_counts": {
+          "goal_kick": 155,
+          "kickoff": 75,
+          "open_play": 14125,
+          "throw_in": 527
+        },
+        "shot_zones_counts": {
+          "final_third": 500
+        },
+        "per_match": {
+          "ordinary_or_unmarked_passes": {
+            "count": 20,
+            "min": 645,
+            "p25": 686.0,
+            "median": 702.0,
+            "p75": 728.5,
+            "max": 769
+          },
+          "pass_restarts_marked": {
+            "count": 20,
+            "min": 30,
+            "p25": 33.0,
+            "median": 39.0,
+            "p75": 42.25,
+            "max": 46
+          },
+          "ordinary_pass_accuracy_known_pct": {
+            "count": 20,
+            "min": 84.1874084919473,
+            "p25": 85.85198616147721,
+            "median": 86.24377053000293,
+            "p75": 87.11642198028018,
+            "max": 88.87362637362638
+          },
+          "record_adjacent_pass_gap_median_seconds": {
+            "count": 20,
+            "min": 4,
+            "p25": 4.0,
+            "median": 4.0,
+            "p75": 4.0,
+            "max": 4
+          },
+          "adjacent_pass_pairs": {
+            "count": 20,
+            "min": 391,
+            "p25": 427.0,
+            "median": 439.5,
+            "p75": 465.0,
+            "max": 498
+          },
+          "shots": {
+            "count": 20,
+            "min": 17,
+            "p25": 20.75,
+            "median": 25.0,
+            "p75": 30.0,
+            "max": 34
+          },
+          "ordinary_pass_forward_pct": {
+            "count": 20,
+            "min": 38.02612481857765,
+            "p25": 41.77559307404598,
+            "median": 42.61787630973677,
+            "p75": 44.52419085606806,
+            "max": 47.12328767123287
+          },
+          "ordinary_pass_backward_pct": {
+            "count": 20,
+            "min": 24.59016393442623,
+            "p25": 26.656934552941575,
+            "median": 26.844570954159998,
+            "p75": 27.97364568081991,
+            "max": 29.292929292929294
+          },
+          "ordinary_pass_lateral_pct": {
+            "count": 20,
+            "min": 25.85034013605442,
+            "p25": 28.699037053722268,
+            "median": 30.333688763622227,
+            "p75": 30.973835337505292,
+            "max": 35.268505079825836
+          }
+        }
+      }
+    },
+    "failure_075": {
+      "rules": {
+        "pass_failure_base": 0.075,
+        "decision_log_mean": 1.1,
+        "minimum_travel_seconds": 2
+      },
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "structural_issue_count": 0,
+      "summary": {
+        "matches": 20,
+        "pass_context_counts": {
+          "goal_kick": 149,
+          "kickoff": 79,
+          "open_play": 12403,
+          "throw_in": 616
+        },
+        "shot_zones_counts": {
+          "final_third": 472
+        },
+        "per_match": {
+          "ordinary_or_unmarked_passes": {
+            "count": 20,
+            "min": 579,
+            "p25": 605.75,
+            "median": 614.0,
+            "p75": 646.5,
+            "max": 662
+          },
+          "pass_restarts_marked": {
+            "count": 20,
+            "min": 33,
+            "p25": 37.0,
+            "median": 41.5,
+            "p75": 45.25,
+            "max": 54
+          },
+          "ordinary_pass_accuracy_known_pct": {
+            "count": 20,
+            "min": 80.64024390243902,
+            "p25": 81.7743550269661,
+            "median": 82.49603614474736,
+            "p75": 83.14541722090136,
+            "max": 84.59214501510574
+          },
+          "record_adjacent_pass_gap_median_seconds": {
+            "count": 20,
+            "min": 4.0,
+            "p25": 5.0,
+            "median": 5.0,
+            "p75": 5.0,
+            "max": 5.0
+          },
+          "adjacent_pass_pairs": {
+            "count": 20,
+            "min": 345,
+            "p25": 361.75,
+            "median": 373.0,
+            "p75": 392.75,
+            "max": 424
+          },
+          "shots": {
+            "count": 20,
+            "min": 18,
+            "p25": 22.75,
+            "median": 23.5,
+            "p75": 25.0,
+            "max": 31
+          },
+          "ordinary_pass_forward_pct": {
+            "count": 20,
+            "min": 39.549839228295816,
+            "p25": 40.59506560412139,
+            "median": 42.756736177633684,
+            "p75": 43.43669699650364,
+            "max": 46.416938110749186
+          },
+          "ordinary_pass_backward_pct": {
+            "count": 20,
+            "min": 23.739837398373982,
+            "p25": 25.949622284192124,
+            "median": 26.784971504200094,
+            "p75": 27.569940288133452,
+            "max": 30.0163132137031
+          },
+          "ordinary_pass_lateral_pct": {
+            "count": 20,
+            "min": 26.10114192495922,
+            "p25": 28.342437308839898,
+            "median": 30.685570456202903,
+            "p75": 33.40145093141293,
+            "max": 35.66775244299674
+          }
+        }
+      }
+    },
+    "travel_1_failure_075": {
+      "rules": {
+        "pass_failure_base": 0.075,
+        "decision_log_mean": 1.1,
+        "minimum_travel_seconds": 1
+      },
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "structural_issue_count": 0,
+      "summary": {
+        "matches": 20,
+        "pass_context_counts": {
+          "goal_kick": 166,
+          "kickoff": 80,
+          "open_play": 13422,
+          "throw_in": 682
+        },
+        "shot_zones_counts": {
+          "final_third": 508
+        },
+        "per_match": {
+          "ordinary_or_unmarked_passes": {
+            "count": 20,
+            "min": 639,
+            "p25": 656.5,
+            "median": 670.5,
+            "p75": 687.5,
+            "max": 697
+          },
+          "pass_restarts_marked": {
+            "count": 20,
+            "min": 37,
+            "p25": 41.75,
+            "median": 46.0,
+            "p75": 49.5,
+            "max": 59
+          },
+          "ordinary_pass_accuracy_known_pct": {
+            "count": 20,
+            "min": 79.63525835866261,
+            "p25": 81.27959824744306,
+            "median": 82.68332943525898,
+            "p75": 83.16957787481805,
+            "max": 84.7919655667145
+          },
+          "record_adjacent_pass_gap_median_seconds": {
+            "count": 20,
+            "min": 4.0,
+            "p25": 4.0,
+            "median": 4.0,
+            "p75": 4.0,
+            "max": 4.0
+          },
+          "adjacent_pass_pairs": {
+            "count": 20,
+            "min": 383,
+            "p25": 391.75,
+            "median": 403.0,
+            "p75": 422.5,
+            "max": 445
+          },
+          "shots": {
+            "count": 20,
+            "min": 19,
+            "p25": 23.0,
+            "median": 25.5,
+            "p75": 28.0,
+            "max": 32
+          },
+          "ordinary_pass_forward_pct": {
+            "count": 20,
+            "min": 37.17357910906298,
+            "p25": 40.97121138605854,
+            "median": 42.95809579700425,
+            "p75": 44.47687723899975,
+            "max": 46.808510638297875
+          },
+          "ordinary_pass_backward_pct": {
+            "count": 20,
+            "min": 22.692889561270803,
+            "p25": 25.09073758352822,
+            "median": 26.512587987853713,
+            "p75": 27.9871972412295,
+            "max": 30.75780089153046
+          },
+          "ordinary_pass_lateral_pct": {
+            "count": 20,
+            "min": 24.924012158054712,
+            "p25": 29.322916666666668,
+            "median": 31.338471393502843,
+            "p75": 32.07604566876,
+            "max": 37.48079877112135
+          }
+        }
+      }
+    },
+    "decision_085_travel_1_failure_075": {
+      "rules": {
+        "pass_failure_base": 0.075,
+        "decision_log_mean": 0.85,
+        "minimum_travel_seconds": 1
+      },
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "structural_issue_count": 0,
+      "summary": {
+        "matches": 20,
+        "pass_context_counts": {
+          "goal_kick": 176,
+          "kickoff": 90,
+          "open_play": 15102,
+          "throw_in": 755
+        },
+        "shot_zones_counts": {
+          "final_third": 561
+        },
+        "per_match": {
+          "ordinary_or_unmarked_passes": {
+            "count": 20,
+            "min": 690,
+            "p25": 735.0,
+            "median": 754.0,
+            "p75": 779.25,
+            "max": 801
+          },
+          "pass_restarts_marked": {
+            "count": 20,
+            "min": 36,
+            "p25": 45.0,
+            "median": 52.5,
+            "p75": 55.0,
+            "max": 60
+          },
+          "ordinary_pass_accuracy_known_pct": {
+            "count": 20,
+            "min": 79.61538461538461,
+            "p25": 81.71002443530604,
+            "median": 82.7272201665125,
+            "p75": 83.35831108144193,
+            "max": 84.72400513478819
+          },
+          "record_adjacent_pass_gap_median_seconds": {
+            "count": 20,
+            "min": 3.0,
+            "p25": 3.0,
+            "median": 3.0,
+            "p75": 3.0,
+            "max": 4.0
+          },
+          "adjacent_pass_pairs": {
+            "count": 20,
+            "min": 416,
+            "p25": 441.5,
+            "median": 455.0,
+            "p75": 472.75,
+            "max": 498
+          },
+          "shots": {
+            "count": 20,
+            "min": 19,
+            "p25": 25.0,
+            "median": 28.0,
+            "p75": 31.25,
+            "max": 38
+          },
+          "ordinary_pass_forward_pct": {
+            "count": 20,
+            "min": 38.75661375661376,
+            "p25": 41.84461589513854,
+            "median": 43.01330068184001,
+            "p75": 44.167715028755076,
+            "max": 46.1436170212766
+          },
+          "ordinary_pass_backward_pct": {
+            "count": 20,
+            "min": 23.943661971830984,
+            "p25": 25.58617839659228,
+            "median": 26.14923390279657,
+            "p75": 27.55706351689612,
+            "max": 28.99728997289973
+          },
+          "ordinary_pass_lateral_pct": {
+            "count": 20,
+            "min": 28.043775649794803,
+            "p25": 29.12596198725672,
+            "median": 30.2262792258439,
+            "p75": 32.60204081632653,
+            "max": 35.30166880616174
+          }
+        }
+      }
+    },
+    "decision_065_travel_1_failure_075": {
+      "rules": {
+        "pass_failure_base": 0.075,
+        "decision_log_mean": 0.65,
+        "minimum_travel_seconds": 1
+      },
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "structural_issue_count": 0,
+      "summary": {
+        "matches": 20,
+        "pass_context_counts": {
+          "goal_kick": 187,
+          "kickoff": 76,
+          "open_play": 16479,
+          "throw_in": 839
+        },
+        "shot_zones_counts": {
+          "final_third": 580
+        },
+        "per_match": {
+          "ordinary_or_unmarked_passes": {
+            "count": 20,
+            "min": 771,
+            "p25": 801.0,
+            "median": 826.5,
+            "p75": 844.25,
+            "max": 874
+          },
+          "pass_restarts_marked": {
+            "count": 20,
+            "min": 40,
+            "p25": 53.0,
+            "median": 55.5,
+            "p75": 59.25,
+            "max": 63
+          },
+          "ordinary_pass_accuracy_known_pct": {
+            "count": 20,
+            "min": 80.14101057579319,
+            "p25": 81.80211503640635,
+            "median": 82.55915918468875,
+            "p75": 83.37277989104246,
+            "max": 84.90338164251207
+          },
+          "record_adjacent_pass_gap_median_seconds": {
+            "count": 20,
+            "min": 3.0,
+            "p25": 3.0,
+            "median": 3.0,
+            "p75": 3.0,
+            "max": 3.0
+          },
+          "adjacent_pass_pairs": {
+            "count": 20,
+            "min": 452,
+            "p25": 482.75,
+            "median": 502.5,
+            "p75": 523.25,
+            "max": 542
+          },
+          "shots": {
+            "count": 20,
+            "min": 21,
+            "p25": 25.0,
+            "median": 28.0,
+            "p75": 32.0,
+            "max": 39
+          },
+          "ordinary_pass_forward_pct": {
+            "count": 20,
+            "min": 39.285714285714285,
+            "p25": 41.22648549338547,
+            "median": 42.29380379672209,
+            "p75": 43.32493381481754,
+            "max": 46.650998824911866
+          },
+          "ordinary_pass_backward_pct": {
+            "count": 20,
+            "min": 22.90909090909091,
+            "p25": 25.582564595811654,
+            "median": 26.319156685289407,
+            "p75": 27.808165260547227,
+            "max": 31.629013079667065
+          },
+          "ordinary_pass_lateral_pct": {
+            "count": 20,
+            "min": 26.90951821386604,
+            "p25": 28.901601830663612,
+            "median": 31.589671029359746,
+            "p75": 32.43145501297602,
+            "max": 35.11904761904762
+          }
+        }
+      }
+    }
+  },
+  "reference": {
+    "provider": "Wyscout",
+    "authors": [
+      "Luca Pappalardo",
+      "Emanuele Massucco"
+    ],
+    "competition": "Premier League",
+    "season": "2017/18",
+    "source": "https://doi.org/10.6084/m9.figshare.c.4415000",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "mirror_snapshot": "ebc4c54c1093c420a81ce442c69e4186fab33bb4",
+    "transformations": "Attacking-frame observations; period-relative first-45-minute windows; match-level aggregates."
+  }
+}

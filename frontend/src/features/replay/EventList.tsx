@@ -3,6 +3,7 @@ import type { Language } from '../../i18n'
 import type { Match, MatchEvent } from '../../types/match'
 import { playerLabel, teamLabel } from './displayNames'
 import { formatClock } from './playback'
+import { eventLabel } from './eventLabel'
 
 export function EventList({ match, events, language }: { match: Match; events: MatchEvent[]; language: Language }) {
   const copy = translations[language]
@@ -14,7 +15,7 @@ export function EventList({ match, events, language }: { match: Match; events: M
       const outcome = event.type === 'pass' || event.type === 'shot' ? copy.outcomes[event.outcome] : null
       return <li key={event.id} className="flex gap-4 py-3 text-sm">
         <span className="tabular-nums text-[#53675b]">{formatClock(event.second)}</span>
-        <div><p className="font-medium">{copy.events[event.type]}{outcome && ` · ${outcome}`}</p>
+        <div><p className="font-medium">{eventLabel(event, language)}{outcome && ` · ${outcome}`}</p>
           <p className="mt-1 text-[#53675b]">{teamLabel(team.name)} · {playerLabel(player.name, team.name)}</p>
         </div>
       </li>

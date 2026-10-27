@@ -9,13 +9,19 @@ import { MatchAnalysisPanel } from '../statistics/MatchAnalysisPanel'
 import { teamLabel } from './displayNames'
 import { recoveryCopy } from '../recoveries/copy'
 import type { DemoScenario } from '../../types/recoveries'
+import { initialAudience, saveAudience } from '../summary/audience'
+import type { Audience } from '../summary/audience'
+import { summaryCopy } from '../summary/copy'
 
 const buttonStyle = 'rounded-lg border border-[#c8d6c9] px-5 py-2.5 font-medium hover:bg-[#e8f0e8] disabled:cursor-not-allowed disabled:opacity-50'
 type LoadState = { status: 'loading' } | { status: 'error' } | { status: 'ready'; data: DemoMatchResponse }
 
 export function MatchReplay({ language }: { language: Language }) {
   const [scenario, setScenario] = useState<DemoScenario>('varied')
+  const [audience, setAudience] = useState<Audience>(initialAudience)
+  useEffect(() => saveAudience(audience), [audience])
   const copy = recoveryCopy[language]
+  const view = summaryCopy[language]
   return <>
     <label className="mt-4 flex flex-wrap items-center gap-2 text-sm font-medium">
       {copy.scenario}
@@ -23,11 +29,17 @@ export function MatchReplay({ language }: { language: Language }) {
         {(Object.keys(copy.scenarios) as DemoScenario[]).map((option) => <option key={option} value={option}>{copy.scenarios[option]}</option>)}
       </select>
     </label>
-    <LoadReplay key={scenario} scenario={scenario} language={language} />
+    <div className="mt-4 flex flex-wrap items-center gap-3">
+      <div role="group" aria-label={view.audience} className="inline-flex rounded-lg border border-[#c8d6c9] bg-white p-1">
+        {(['fan', 'analyst'] as const).map((mode) => <button key={mode} type="button" aria-pressed={audience === mode} onClick={() => setAudience(mode)} className={`min-h-11 rounded-md px-4 text-sm font-medium ${audience === mode ? 'bg-[#205c41] text-white' : 'text-[#365044] hover:bg-[#e8f0e8]'}`}>{view[mode]}</button>)}
+      </div>
+      <p className="max-w-lg text-xs leading-5 text-[#53675b]">{audience === 'fan' ? view.fanHelp : view.analystHelp}</p>
+    </div>
+    <LoadReplay key={scenario} scenario={scenario} language={language} audience={audience} />
   </>
 }
 
-function LoadReplay({ language, scenario }: { language: Language; scenario: DemoScenario }) {
+function LoadReplay({ language, scenario, audience }: { language: Language; scenario: DemoScenario; audience: Audience }) {
   const [load, setLoad] = useState<LoadState>({ status: 'loading' })
   const [attempt, setAttempt] = useState(0)
   const copy = translations[language]
@@ -49,10 +61,10 @@ function LoadReplay({ language, scenario }: { language: Language; scenario: Demo
       <button className={buttonStyle} onClick={() => setAttempt((value) => value + 1)}>{copy.retry}</button>
     </div>
   )
-  return <Replay data={load.data} language={language} scenario={scenario} />
+  return <Replay data={load.data} language={language} scenario={scenario} audience={audience} />
 }
 
-function Replay({ data, language, scenario }: { data: DemoMatchResponse; language: Language; scenario: DemoScenario }) {
+function Replay({ data, language, scenario, audience }: { data: DemoMatchResponse; language: Language; scenario: DemoScenario; audience: Audience }) {
   const { match, duration_seconds: duration } = data
   const { second, playing, speed, dispatch } = usePlayback(duration)
   const copy = translations[language]
@@ -88,6 +100,6 @@ function Replay({ data, language, scenario }: { data: DemoMatchResponse; languag
         <input type="range" min={0} max={duration} step={1} value={Math.floor(second)} aria-valuetext={formatClock(second)} onChange={(event) => dispatch({ type: 'seek', second: Number(event.target.value), duration })} className="block h-6 w-full accent-[#205c41]" />
       </label>
     </div>
-    <MatchAnalysisPanel match={match} second={second} playing={playing} scenario={scenario} language={language} recentEvents={recentEvents} onSeek={(target) => dispatch({ type: 'seek', second: target, duration })} />
+    <MatchAnalysisPanel match={match} second={second} playing={playing} scenario={scenario} language={language} audience={audience} recentEvents={recentEvents} onSeek={(target) => dispatch({ type: 'seek', second: target, duration })} />
   </>
 }

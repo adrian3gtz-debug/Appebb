@@ -1,4 +1,5 @@
 import type { RecoveryAnalysis } from './recoveries'
+import type { MatchRecap } from './recap'
 
 export interface TeamStatistics {
   team_id: string
@@ -34,4 +35,5 @@ export interface MatchAnalysis {
   as_of_second: number
   statistics: MatchStatistics
   recoveries: RecoveryAnalysis
+  recap?: MatchRecap
 }

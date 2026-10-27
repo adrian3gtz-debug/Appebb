@@ -7,6 +7,61 @@ Documento de entrada para retomar el proyecto en otra conversación. Resume deci
 
 ## 1. Cómo retomar
 
+**Integración Foundry posterior (27/10/2026):** el usuario creó Azure for Students
+($100), con regiones permitidas `canadacentral`, `northcentralus`, `denmarkeast`,
+`brazilsouth`, `norwayeast`. GPT-6 Luna, GPT-5.6 Luna y GPT-5.4 nano mostraron
+cuota cero; GPT-5 mini Global Standard mostró 500K TPM. Se creó otro recurso en
+North Central US porque Canada Central no soporta esa combinación. Implementación
+`football-insights`, modelo GPT-5 mini `2025-08-07`; playground respondió al caso
+1→6 recuperaciones y 3 secuencias con remate. El usuario compartió endpoint público,
+no clave, y solo puede configurar la clave en su computadora local.
+
+Ahora existe código local para el POST de explicaciones de recuperaciones con
+Responses v1 y botón manual EN/ES / Aficionado/Analista. Leer
+[configuración, contrato y límites](foundry-explanations.md). El proveedor se
+prueba simulado aquí; falta llamada real desde nuestra API con la clave local.
+El resumen final sigue por reglas. Verificación: 175 pruebas backend, 13 frontend,
+build y recorrido Chromium móvil correctos (generación simulada al pulsar, cambio
+de audiencia, retroceso que oculta futuro y error real sin clave). El usuario
+autorizó commit y push de todos los cambios acumulados a `phase1-foundation`.
+Esta entrega incluye validación de referencia, generador V2, resúmenes, modos y
+adaptador Foundry. Verificar el commit remoto y los despliegues automáticos de
+Vercel después de la subida; la inferencia real desde nuestra API sigue pendiente.
+
+**Continuación local posterior a esta referencia:** se eligió Wyscout/Pappalardo,
+Premier League masculina 2017/18 (380 partidos), con licencia CC BY 4.0, como
+primera muestra. Existe una capa de observaciones, CLI reproducible y comparación
+de 300 partidos frente a 100 semillas. `varied-v2` identifica reinicios y ajusta
+el término base de fallo de pase a 0.075 tras comparar seis candidatos. Se evaluó
+después con los 80 partidos reservados; ya no deben tratarse como datos nunca
+vistos para futuros ajustes. Leer [validación](reference-validation.md) y
+[refinamiento e insights durante reproducción](generator-refinement.md). El
+acierto mejora, pero volumen, ritmo y direcciones de pase siguen sin reproducir
+la muestra. La UI conserva sus escenarios sintéticos. La migración del contrato
+para reproducción real sigue pendiente. Esta continuación se incorpora en la
+entrega autorizada descrita arriba.
+
+Verificación más reciente de esta continuación: 140 pruebas backend, 9 frontend
+y compilación frontend correctas. Chromium con API local confirmó que el insight
+guionizado aparece al cruzar 20:00 durante reproducción y desaparece al retroceder
+o reiniciar; también EN/ES y ancho móvil de 390px. No se verificó publicación nueva.
+
+**Etapa posterior de entrega:** ya hay resumen por corte y resumen final a 90:00,
+con goles trazables al reloj y modos Aficionado/Analista EN/ES. El modo cambia el
+detalle y la presentación de estadísticas sin reiniciar reproducción ni añadir
+polling. Consultar [resumen y personalización](match-summary.md). Son plantillas
+deterministas. En esa etapa el usuario pidió posponer Foundry; posteriormente
+configuró el modelo y se añadió el adaptador descrito arriba.
+
+Verificación de esta etapa: 155 pruebas backend y 13 frontend correctas, compilación
+frontend y recorrido en Chromium con API local. Se comprobó cambio de modo sin
+nuevas peticiones de análisis en pausa, navegación al primer gol sin mostrar goles
+futuros, persistencia de idioma/modo, reproducción activa y ancho móvil de 390px.
+La [entrega en borrador](submission-draft.md) contiene pitch, guion de 110s,
+arquitectura y pendientes reales. El cierre oficial es 27/10/2026 a las 23:59 PT,
+equivalente a 28/10/2026 00:59 en Ciudad de México. Aún faltan IA conectada, revisión
+de categoría, repo público, publicación verificada, video y envío en el portal.
+
 1. Leer este documento y el [README](../README.md).
 2. Confirmar el directorio disponible, las instrucciones locales aplicables, `git status`, la rama, el último commit y el remoto. El entorno de un chat nuevo puede ser diferente.
 3. Consultar la documentación y el código del área que se vaya a trabajar. El estado real del repositorio tiene prioridad sobre una referencia histórica de este documento.
@@ -102,7 +157,7 @@ Detalles: [guía de Vercel](vercel-deployment.md).
 | Estadísticas | Posesión, pases intentados/completados, precisión, tiros, goles y desglose de tiros hasta el corte temporal. |
 | Recuperaciones | Recuperaciones adelantadas, seguimiento de posesiones hasta tiro/pérdida/interrupción y comparación entre ventanas cerradas. |
 | Evidencia | Cancha SVG seleccionable, acciones registradas de la posesión, conteos, reglas y límites consultables. |
-| Generación | Escenarios guionizados de regresión y generador variado `varied-v1`, con semilla y duraciones/desenlaces variables. |
+| Generación | Escenarios guionizados de regresión y generador `varied-v2`; V1 sigue reproducible. Contextos de reinicio y ajuste limitado de acierto según Wyscout 2017/18. |
 | Diagnóstico | Auditoría independiente de continuidad, receptores, reinicios y límites físicos asumidos; resúmenes de distribuciones. |
 | Publicación | Frontend y backend separados en Vercel; confirmar el último despliegue como se indica arriba. |
 
@@ -133,7 +188,7 @@ JSON o generador sintético → Match validado con Pydantic
 | --- | --- |
 | `backend/app/models/` | Contratos de eventos, partido, posesión, estadísticas y evidencia |
 | `backend/app/services/match_repository.py` | Selección de escenarios; caché del partido variado de demo |
-| `backend/app/services/varied_generator.py` | Generador nuevo; semilla por defecto 7, versión `varied-v1` |
+| `backend/app/services/varied_generator.py` | Generador actual V2; semilla 7. V1 seleccionable por versión. |
 | `backend/app/services/synthetic_audit.py` | Diagnóstico desde eventos e intervalos, sin etiquetas del generador |
 | `backend/app/services/synthetic_generator.py` | Escenario original de circulación/contraataque |
 | `backend/app/services/recovery_scenarios.py` | Tres escenarios guionizados para comprobar recuperaciones |
@@ -220,6 +275,13 @@ No llamar PPDA al conteo actual de recuperaciones: faltan acciones defensivas ne
 
 ## 10. Siguiente etapa propuesta, todavía sin implementar
 
+**Actualización de continuidad:** las dos primeras etapas ya están implementadas;
+consultar [referencia](reference-validation.md) y [V2](generator-refinement.md).
+El siguiente objetivo es revisar cobertura de interrupciones, ritmo y direcciones
+de pase antes de otros ajustes. Reducir tiempos aisladamente empeoró el volumen
+de tiros en el experimento. La muestra de evaluación de 80 partidos ya fue vista.
+Adaptar API/frontend a partidos reales requiere una migración versionada del contrato.
+
 **Validar el generador frente a una referencia apropiada.** La última decisión de prioridad fue mejorar datos antes de añadir IA; no volver automáticamente a priorizar el resumen o el proveedor de lenguaje por una propuesta anterior del chat.
 
 Plan para discutir y aprobar con el usuario:
@@ -237,8 +299,8 @@ Resultado esperado de esa etapa: un informe reproducible de diferencias y cambio
 Pendientes, sujetos a priorización y aprobación:
 
 - Progresión y entradas al último tercio, distribución por sectores y otras comparaciones tácticas con metodología explícita.
-- Resumen final trazable desde métricas y eventos.
-- Experiencias de aficionado y analista: mismos hechos, distinto detalle y lenguaje. EN/ES sí existe; estos dos modos todavía no.
+- Resumen final y experiencias aficionado/analista: ya implementados con plantillas
+  y evidencia por corte; pendiente la capa de explicación generativa de Foundry.
 - Contrato de insights más amplio y tarjetas compactas para transmisión.
 - Interfaz de proveedor y Microsoft Foundry, con plantillas de desarrollo identificadas y validación de las explicaciones.
 - Integración/despliegue en Azure y comprobación de requisitos oficiales del hackathon.
@@ -246,7 +308,11 @@ Pendientes, sujetos a priorización y aprobación:
 
 Visión posterior: adaptador de partidos históricos reales al modelo común, tras revisar cobertura/licencias. Reconocimiento o tracking con YOLO/ByteTrack/BoT-SORT es opcional y posterior a estabilizar lo anterior. No hay visión por computadora implementada.
 
-No se han integrado Foundry, un proveedor real de IA, xT, VAEP, xG, una base de datos, transmisión real ni un simulador físico completo. No presentar las plantillas actuales como IA ni los resultados sintéticos como observaciones de Premier League.
+Existe un adaptador Foundry local para explicaciones de recuperaciones, pendiente
+de prueba real desde nuestra API con credenciales. No se han integrado xT, VAEP,
+xG, una base de datos, transmisión real ni un simulador físico completo. No
+presentar las plantillas como IA ni los resultados sintéticos como observaciones
+de Premier League.
 
 ## 12. Comandos para Windows
 

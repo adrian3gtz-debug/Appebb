@@ -11,8 +11,23 @@ from pydantic import TypeAdapter
 from app.models import BallStateInterval, Coordinate, Match, MatchEvent
 from app.services.synthetic_common import field_point, make_team
 
-GENERATOR_VERSION = "varied-v1"
+GENERATOR_VERSION = "varied-v2"
+GeneratorVersion = Literal["varied-v1", "varied-v2"]
 Pattern = Literal["circulation", "progression", "wide", "transition"]
+
+
+@dataclass(frozen=True)
+class GenerationRules:
+    pass_failure_base: float = .04
+    decision_log_mean: float = 1.1
+    minimum_travel_seconds: int = 2
+
+
+VERSION_RULES = {
+    "varied-v1": GenerationRules(),
+    # V2's parameters are frozen after the documented tuning comparison.
+    "varied-v2": GenerationRules(pass_failure_base=.075),
+}
 
 
 @dataclass(frozen=True)
@@ -21,6 +36,7 @@ class Start:
     point: Coordinate
     player: int
     recovery: str | None = None
+    restart: Literal["kickoff", "throw_in", "goal_kick"] | None = None
 
 
 def opponent(team: str) -> str:
@@ -33,9 +49,14 @@ def distance(start: Coordinate, end: Coordinate) -> float:
 
 
 class _Builder:
-    def __init__(self, seed: int):
+    def __init__(self, seed: int, version: GeneratorVersion = GENERATOR_VERSION,
+                 rules: GenerationRules | None = None):
+        if version not in VERSION_RULES:
+            raise ValueError(f"unsupported generator version: {version}")
+        self.version = version
+        self.rules = rules if rules is not None else VERSION_RULES[version]
         self.rng = Random(seed)
-        self.match_id = "synthetic-" + sha256(f"{GENERATOR_VERSION}:{seed}".encode()).hexdigest()[:12]
+        self.match_id = "synthetic-" + sha256(f"{version}:{seed}".encode()).hexdigest()[:12]
         self.events: list[MatchEvent] = []
         self.states: list[BallStateInterval] = []
         self.adapter = TypeAdapter(MatchEvent)
@@ -134,18 +155,18 @@ class _Builder:
                 self.state(beginning, t, "controlled", start.team)
                 return t, following
 
-            # Restarts are represented by the first pass, as in the existing schema.
+            # A restart is the first pass only, never the whole following possession.
             carry = age > 1 and player != 1 and self.rng.random() < .24
             destination = self.destination(point, start.team, period, pattern, carry)
-            failure_chance = (.04 + distance(point, destination) / 260 + (.10 if pressured else 0)
+            failure_chance = (self.rules.pass_failure_base + distance(point, destination) / 260 + (.10 if pressured else 0)
                               + (.05 if self.progress(destination, start.team, period) > 65 else 0))
             failed = self.rng.random() < (failure_chance if not carry else .06 + .08 * pressured)
             out = failed and not carry and self.rng.random() < .27
             if out:
                 destination = Coordinate(x=destination.x, y=0 if destination.y < 50 else 100)
             speed = self.rng.uniform(3.5, 6.5) if carry else self.rng.uniform(12, 23)
-            duration = max(2, ceil(distance(point, destination) / speed))
-            decision = max(1, round(self.rng.lognormvariate(1.1, .45) * pace))
+            duration = max(self.rules.minimum_travel_seconds, ceil(distance(point, destination) / speed))
+            decision = max(1, round(self.rng.lognormvariate(self.rules.decision_log_mean, .45) * pace))
             if pattern == "transition":
                 decision = max(1, decision // 2)
             next_t = t + duration + decision
@@ -162,14 +183,17 @@ class _Builder:
             else:
                 self.emit("pass", t, start, possession, player, point, end_location=destination,
                           outcome="incomplete" if failed else "complete",
-                          receiver_id=None if failed else f"{start.team}-{receiver:02}")
+                          receiver_id=None if failed else f"{start.team}-{receiver:02}",
+                          **({"pass_context": start.restart if age == 1 and start.restart else "open_play"}
+                             if self.version != "varied-v1" else {}))
             t = next_t
             if failed:
                 self.state(beginning, t, "controlled", start.team)
                 if out:
                     end = min(half_end, t + self.rng.randint(9, 26))
                     self.state(t, end, "out_of_play")
-                    return end, Start(opponent(start.team), destination, 2 if destination.y == 0 else 5)
+                    return end, Start(opponent(start.team), destination, 2 if destination.y == 0 else 5,
+                                      restart="throw_in")
                 contested = self.rng.random() < .23
                 following = self.turnover(start.team, destination, period,
                                           "loose_ball" if contested else "tackle" if carry else "interception")
@@ -198,7 +222,8 @@ class _Builder:
             arrival = min(half_end, t + max(1, ceil(distance(point, field_point(100, 50, start.team, period)) / 25)))
             # The caller closes control through ball flight; the outer loop records dead time.
             self.pending_dead = self.rng.randint(30, 65) if outcome == "goal" else self.rng.randint(12, 30)
-            return arrival, Start(other, restart, 9 if outcome == "goal" else 1)
+            return arrival, Start(other, restart, 9 if outcome == "goal" else 1,
+                                  restart="kickoff" if outcome == "goal" else "goal_kick")
         if outcome == "saved":
             restart = field_point(4, self.rng.uniform(43, 57), other, period)
             arrival = min(half_end, t + max(1, ceil(distance(point, restart) / 25)))
@@ -211,7 +236,7 @@ class _Builder:
     def build(self) -> Match:
         for half_start in (0, 2700):
             t, half_end = half_start, half_start + 2700
-            start = Start("home" if half_start == 0 else "away", Coordinate(x=50, y=50), 9)
+            start = Start("home" if half_start == 0 else "away", Coordinate(x=50, y=50), 9, restart="kickoff")
             while t < half_end:
                 self.pending_dead = self.pending_contest = 0
                 t, start = self.possession(t, half_end, start)
@@ -224,6 +249,6 @@ class _Builder:
                      events=self.events, ball_states=self.states)
 
 
-def generate_varied_match(seed: int = 7) -> Match:
+def generate_varied_match(seed: int = 7, *, version: GeneratorVersion = GENERATOR_VERSION) -> Match:
     """Same seed and version reproduce a match; outcomes are sampled from its actions."""
-    return _Builder(seed).build()
+    return _Builder(seed, version=version).build()

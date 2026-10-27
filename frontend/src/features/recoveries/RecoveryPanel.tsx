@@ -7,10 +7,11 @@ import { formatClock } from '../replay/playback'
 import { playerLabel, teamLabel } from '../replay/displayNames'
 import { recoveryCopy } from './copy'
 import { RecoveryPitch } from './RecoveryPitch'
+import type { Audience } from '../summary/audience'
 
-interface Props { match: Match; second: number; data: RecoveryAnalysis; language: Language; onSeek: (second: number) => void }
+interface Props { match: Match; second: number; data: RecoveryAnalysis; language: Language; audience: Audience; onSeek: (second: number) => void }
 
-export function RecoveryPanel({ match, second, data, language, onSeek }: Props) {
+export function RecoveryPanel({ match, second, data, language, audience, onSeek }: Props) {
   const copy = recoveryCopy[language]
   const eventCopy = translations[language]
   const [teamId, setTeamId] = useState(match.home_team.id)
@@ -76,12 +77,14 @@ export function RecoveryPanel({ match, second, data, language, onSeek }: Props) 
         {selected && <div className="mt-4 rounded-xl border border-[#dce5db] p-4">
           <h3 className="font-semibold">{copy.selected} · {formatClock(selected.start_second)}</h3>
           <p className="mt-1 text-sm font-medium text-[#205c41]">{selected.seconds_to_shot !== null ? copy.shotAfter(selected.seconds_to_shot) : copy.statuses[selected.status]}</p>
+          <details key={audience} open={audience === 'analyst'} className="mt-3 border-t border-[#dce5db] pt-3">
+          <summary className="cursor-pointer text-sm font-medium">{copy.recordedActions} · {chain.length}</summary>
           <ol className="mt-2 divide-y divide-[#edf1eb]">{chain.map((event) => {
             const actorTeam = event.team_id === match.home_team.id ? match.home_team : match.away_team
             const player = actorTeam.players.find((item) => item.id === event.player_id)!
             const outcome = event.type === 'pass' || event.type === 'shot' ? eventCopy.outcomes[event.outcome] : null
             return <li key={event.id} className="flex gap-3 py-2 text-sm"><span className="tabular-nums text-[#53675b]">{formatClock(event.second)}</span><div><span className="font-medium">{eventCopy.events[event.type]}{outcome && ` · ${outcome}`}</span><p className="mt-1 text-[#53675b]">{teamLabel(actorTeam.name)} · {playerLabel(player.name, actorTeam.name)}</p></div></li>
-          })}</ol>
+          })}</ol></details>
         </div>}
         <h3 className="mt-5 text-base font-semibold">{copy.sequences}</h3>
         {sequences.length === 0 ? <p className="mt-2 text-sm leading-6 text-[#53675b]">{copy.empty}</p> : <div className="mt-3 grid max-h-52 gap-2 overflow-y-auto sm:grid-cols-2">
