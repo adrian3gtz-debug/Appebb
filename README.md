@@ -1,12 +1,32 @@
 # Football Intelligence Lab
 
+### Whole-match AI story and final report
+
+**What is happening in the match?** explains the current replay cutoff in every
+scenario. Fans receive two concise paragraphs; analysts receive three, including
+passing, accuracy, controlled-time shares and recent shot activity. Both support
+English and Spanish, with inspectable facts for each paragraph.
+
+Request the current instant manually, or opt into updates at goals, ten-minute
+checkpoints, half-time and full time. Automatic updates group milestones with a
+30-second real-time gap, except at full time. After the first AI request, reaching
+90:00 requests a final report. Rewinding hides future results; calculated summaries
+and statistics remain available if the provider fails. This is synthetic replay,
+not a live external data feed.
+
+The new general/final narration is tested with a simulated provider and a real
+local data API. Azure verification of these new prompts remains pending on the
+user's computer; the earlier recovery explanation has one verified real local call.
+See [whole-match narration, setup and limits](docs/match-narrative.md).
+
 ### Microsoft Foundry recovery explanations (local integration)
 
 Closed recovery insights offer an explicit **Explain with AI** action in English
 or Spanish, for fans or analysts. The backend builds the evidence and calls an
 Azure OpenAI Responses deployment; regular replay polling never calls the model.
-Match recaps still use deterministic templates. Provider tests use mocks; a real
-backend call and production deployment have not yet been verified.
+The calculated recap remains available alongside the new AI report. Provider tests use mocks; the user
+also verified one real local backend call. Broader model evaluation and production
+inference verification remain pending.
 See [setup and limitations](docs/foundry-explanations.md), including private backend
 environment variables, response checks and per-worker rate limits.
 
@@ -14,7 +34,7 @@ From match events to explainable football intelligence.
 
 For project status, collaboration preferences, research decisions and the proposed next stage, start with [the project context and handoff (Spanish)](docs/project-context.md).
 
-This is the foundation for Match Story Engine. It contains a React frontend, FastAPI endpoints, validated match models, possession-time calculation, browser playback of reproducible synthetic fixtures, and recovery-to-attack analysis with inspectable evidence. An optional Foundry adapter is implemented locally; real backend inference still requires private configuration and verification.
+This is the foundation for Match Story Engine. It contains a React frontend, FastAPI endpoints, validated match models, possession-time calculation, browser playback of reproducible synthetic fixtures, and recovery-to-attack analysis with inspectable evidence. An optional Foundry adapter requires private backend configuration; one real local inference call has been verified, with broader evaluation still pending.
 
 ## Requirements
 

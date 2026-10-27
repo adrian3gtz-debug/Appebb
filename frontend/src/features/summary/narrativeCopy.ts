@@ -1,0 +1,26 @@
+export const narrativeCopy = {
+  es: {
+    title: '¿Qué está pasando en el partido?', final: 'Crónica final con IA',
+    intro: 'Explica el marcador, los remates, la circulación y los momentos registrados hasta el reloj actual.',
+    action: 'Explicar el partido ahora', finalAction: 'Generar crónica final', update: 'Actualizar explicación',
+    follow: 'Seguir el partido con IA', followHelp: 'Actualiza en goles, cierres de diez minutos, descanso y final; agrupa cambios con una pausa mínima de 30 segundos reales, salvo el final. Consume tokens de Azure.',
+    finalHelp: 'Después de tu primera consulta, al llegar a 90:00 se solicitará la crónica final.',
+    loading: 'Preparando la explicación con Microsoft Foundry…',
+    error: 'No se pudo obtener una explicación válida. El resumen calculado y las estadísticas siguen disponibles.',
+    limit: 'Se alcanzó el límite temporal de IA. Espera un momento y vuelve a intentarlo.',
+    evidence: 'Comprobar hechos citados', through: 'Hechos hasta', note: 'Texto generado con Microsoft Foundry sobre datos sintéticos. Revisa las referencias: una explicación no demuestra causalidad ni calidad de ocasiones.',
+    inspect: 'Ir al momento', snapshot: 'La reproducción avanzó. Este texto corresponde al corte indicado.',
+  },
+  en: {
+    title: 'What is happening in the match?', final: 'AI final match report',
+    intro: 'Explain the score, shots, passing and recorded moments through the current replay clock.',
+    action: 'Explain the match now', finalAction: 'Generate final report', update: 'Update explanation',
+    follow: 'Follow the match with AI', followHelp: 'Updates at goals, ten-minute checkpoints, half-time and full time; groups changes with a minimum 30-second real-time gap, except at full time. Consumes Azure tokens.',
+    finalHelp: 'After your first request, reaching 90:00 will request the final match report.',
+    loading: 'Preparing the explanation with Microsoft Foundry…',
+    error: 'A valid AI explanation could not be obtained. The calculated summary and statistics remain available.',
+    limit: 'The temporary AI request limit was reached. Wait a moment and try again.',
+    evidence: 'Check cited facts', through: 'Facts through', note: 'Generated with Microsoft Foundry from synthetic data. Check the references: an explanation does not establish causality or chance quality.',
+    inspect: 'Go to moment', snapshot: 'The replay has advanced. This text describes the displayed evidence cutoff.',
+  },
+} as const

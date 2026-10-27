@@ -11,6 +11,7 @@ import type { Audience } from '../summary/audience'
 import { MatchSummary } from '../summary/MatchSummary'
 import { summaryCopy } from '../summary/copy'
 import { AiExplanation } from '../recoveries/AiExplanation'
+import { MatchNarrative } from '../summary/MatchNarrative'
 
 interface Props { match: Match; second: number; playing: boolean; scenario: DemoScenario; language: Language; audience: Audience; recentEvents: MatchEvent[]; onSeek: (second: number) => void }
 
@@ -20,6 +21,7 @@ export function MatchAnalysisPanel({ match, second, playing, scenario, language,
   const insight = data?.recoveries.insights.reduce<(typeof data.recoveries.insights)[number] | undefined>(
     (latest, item) => !latest || item.detected_second > latest.detected_second ? item : latest, undefined)
   return <>
+    <MatchNarrative match={match} scenario={scenario} second={second} language={language} audience={audience} onSeek={onSeek} />
     {error && <div role="alert" className="mt-6 rounded-lg bg-red-50 p-4 text-red-800">{copy.error} <button onClick={retry} className="ml-2 font-semibold underline">{copy.retry}</button></div>}
     {!data ? <p role="status" className="py-8">{copy.loading}</p> : <>
       {data.recap && data.recap.match_id === match.id && data.recap.as_of_second === data.as_of_second

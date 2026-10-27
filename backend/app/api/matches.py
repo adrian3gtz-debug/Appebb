@@ -15,9 +15,16 @@ from app.models.recoveries import RecoveryAnalysis
 from app.services.match_repository import DemoScenario, load_scenario
 from app.models.explanation import ExplanationRequest, ExplanationResponse
 from app.services.explanations import explain
+from app.models.narrative import NarrativeRequest, NarrativeResponse
+from app.services.narratives import narrate
 
 router = APIRouter(prefix="/api/matches", tags=["matches"])
 logger = logging.getLogger(__name__)
+
+
+@router.post("/demo/narrative", response_model=NarrativeResponse)
+async def match_narrative(request: NarrativeRequest) -> NarrativeResponse:
+    return await narrate(_available_match(request.scenario), request)
 
 
 @router.post("/demo/explanation", response_model=ExplanationResponse)

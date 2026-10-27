@@ -1,6 +1,8 @@
 """Foundry Responses adapter. Facts come from Python, never from client text."""
 
 from collections import OrderedDict, deque
+from collections.abc import Callable
+import asyncio
 import hashlib
 import json
 import os
@@ -76,29 +78,32 @@ def validate_text(raw: str, facts: dict) -> ModelText:
 
 
 async def request_model(endpoint: str, key: str, deployment: str, facts: dict,
-                        language: str, audience: str) -> str:
-    instructions = (
+                        language: str, audience: str, *, instructions: str | None = None,
+                        schema: dict | None = None, max_output_tokens: int = 1000) -> str:
+    instructions = instructions or (
         "Explain only the supplied synthetic football facts. Do not use tools or outside knowledge. "
         "Write at most 65 words, plain text, using digits for counts. Refer to the home/away team, "
-        "never invent names. Report both the recovery counts with their minute intervals and the "
+        "using 'equipo local'/'equipo visitante' in Spanish and 'home team'/'away team' in English. "
+        "Never invent names. Report both the recovery counts with their minute intervals and the "
         "number of subsequent possessions ending in a shot in the current interval. "
         "Do not derive percentages, ratios or new numbers. Do not infer pressure, tactics, dominance, "
         "quality, goals, coaching decisions or causality. No advice or predictions. "
         f"Language: {language}. Audience: {audience}; fan uses everyday language; analyst is precise about windows. "
         "Return JSON matching the schema. Cite exactly recovery_increase and subsequent_shots."
     )
+    schema = schema or {
+        "type": "object", "properties": {
+            "text": {"type": "string"},
+            "fact_ids": {"type": "array", "items": {"type": "string", "enum": ["recovery_increase", "subsequent_shots"]}},
+        }, "required": ["text", "fact_ids"], "additionalProperties": False,
+    }
     async with httpx.AsyncClient(timeout=httpx.Timeout(25, connect=5), follow_redirects=False) as client:
         response = await client.post(endpoint, headers={"api-key": key}, json={
             "model": deployment, "store": False, "instructions": instructions,
-            "input": json.dumps(facts), "max_output_tokens": 1000,
+            "input": json.dumps(facts), "max_output_tokens": max_output_tokens,
             "reasoning": {"effort": "minimal"},
             "text": {"format": {"type": "json_schema", "name": "explanation",
-                "strict": True, "schema": {
-                    "type": "object", "properties": {
-                        "text": {"type": "string"},
-                        "fact_ids": {"type": "array", "items": {"type": "string", "enum": ["recovery_increase", "subsequent_shots"]}},
-                    }, "required": ["text", "fact_ids"], "additionalProperties": False,
-                }}},
+                "strict": True, "schema": schema}},
         })
     response.raise_for_status()
     payload = response.json()
@@ -110,17 +115,19 @@ async def request_model(endpoint: str, key: str, deployment: str, facts: dict,
 
 
 # Best-effort limits per worker; serverless replicas do not share this state.
-_cache: OrderedDict[str, ExplanationResponse] = OrderedDict()
+_cache: OrderedDict[str, BaseModel] = OrderedDict()
 _calls: deque[float] = deque()
 _busy = False
 
 
-async def explain(match: Match, request: ExplanationRequest) -> ExplanationResponse:
+async def generate_checked(facts: dict, language: str, audience: str, *, version: str,
+                           validate: Callable[[str], BaseModel], instructions: str | None = None,
+                           schema: dict | None = None, max_output_tokens: int = 1000) -> BaseModel:
+    """Shared cache and request budget for recovery and whole-match narration."""
     global _busy
-    facts, event_ids, second = evidence(match, request)
     endpoint, key, deployment = settings()
-    cache_key = hashlib.sha256(json.dumps(["explanation-v1", endpoint, deployment, facts,
-        request.language, request.audience], sort_keys=True).encode()).hexdigest()
+    cache_key = hashlib.sha256(json.dumps([version, endpoint, deployment, facts,
+        language, audience], sort_keys=True).encode()).hexdigest()
     if cache_key in _cache:
         _cache.move_to_end(cache_key)
         return _cache[cache_key].model_copy(deep=True)
@@ -133,19 +140,28 @@ async def explain(match: Match, request: ExplanationRequest) -> ExplanationRespo
     _busy = True
     _calls.append(now)
     try:
-        raw = await request_model(endpoint, key, deployment, facts, request.language, request.audience)
-        result = validate_text(raw, facts)
+        args = (endpoint, key, deployment, facts, language, audience)
+        call = request_model(*args) if instructions is None else request_model(
+            *args, instructions=instructions, schema=schema, max_output_tokens=max_output_tokens)
+        raw = await asyncio.wait_for(call, timeout=30)
+        result = validate(raw)
     except httpx.HTTPStatusError as error:
         status = 429 if error.response.status_code == 429 else 502
         raise HTTPException(status, "AI provider unavailable; deterministic evidence remains available") from None
-    except (httpx.RequestError, ValueError, KeyError, TypeError):
+    except (httpx.RequestError, TimeoutError, ValueError, KeyError, TypeError):
         raise HTTPException(502, "AI response unavailable or rejected; deterministic evidence remains available") from None
     finally:
         _busy = False
-    response = ExplanationResponse(match_id=match.id, insight_id=request.insight_id,
-        evidence_second=second, language=request.language, audience=request.audience,
-        text=result.text, fact_ids=result.fact_ids, recovery_event_ids=event_ids)
-    _cache[cache_key] = response
+    _cache[cache_key] = result
     if len(_cache) > 96:
         _cache.popitem(last=False)
-    return response.model_copy(deep=True)
+    return result.model_copy(deep=True)
+
+
+async def explain(match: Match, request: ExplanationRequest) -> ExplanationResponse:
+    facts, event_ids, second = evidence(match, request)
+    result = await generate_checked(facts, request.language, request.audience,
+        version="explanation-v2", validate=lambda raw: validate_text(raw, facts))
+    return ExplanationResponse(match_id=match.id, insight_id=request.insight_id,
+        evidence_second=second, language=request.language, audience=request.audience,
+        text=result.text, fact_ids=result.fact_ids, recovery_event_ids=event_ids)

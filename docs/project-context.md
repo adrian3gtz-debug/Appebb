@@ -7,6 +7,35 @@ Documento de entrada para retomar el proyecto en otra conversación. Resume deci
 
 ## 1. Cómo retomar
 
+**Ampliación autorizada posterior:** ante el alcance limitado de recuperaciones,
+el usuario pidió implementar relato del estado general, crónica final y
+personalización Aficionado/Analista ES/EN. Ya existe código local para
+`POST /demo/narrative`, hechos al corte, titular y párrafos con referencias,
+tarjeta visible en todos los escenarios, consulta exacta manual y seguimiento
+opcional por hitos (30 s reales entre actualizaciones, salvo final). La primera
+consulta activa crónica al llegar a 90:00. Al retroceder se descartan respuestas
+futuras. Leer [relato general y final](match-narrative.md).
+Verificación de esta ampliación: 215 pruebas backend, 18 frontend, build y Chromium
+móvil correctos, con respuestas generativas simuladas. Se probaron cambio de modo
+e idioma, petición manual, seguimiento por hitos, crónica automática al final,
+89:59 en juego, retroceso y aborto de resultados futuros y error real sin clave.
+La clave sigue solo en Windows: falta probar el nuevo relato con Azure real.
+El usuario autorizó también commit y push de esta ampliación a `phase1-foundation`.
+La subida activará los despliegues de Vercel; verificar sus resultados por separado.
+Para probar en Windows, actualizar con `git pull --ff-only origin phase1-foundation`,
+reiniciar backend con `--env-file .env` y frontend con `npm run dev` en terminales
+separadas. Mantener el `.env` privado existente; no crear otro recurso de Azure.
+
+**Prueba real local posterior:** el usuario actualizó su copia Windows a `4b2e4d9`,
+configuró `backend/.env` y obtuvo una explicación en la tarjeta «Explicación con
+IA · 20:00» mediante su backend local y Foundry. El usuario confirmó el escenario
+«Recuperaciones sin remate»: los conteos 1→6 y 0 posesiones con remate de la captura
+coinciden con la evidencia calculada a 20:00. Esto verifica
+una llamada real, no todos los idiomas, audiencias o escenarios ni producción.
+Se preparó una corrección local del aviso obsoleto «no hay proveedor» y de las
+instrucciones para traducir home/away en español, con versión de caché nueva.
+La clave permanece solo en la computadora del usuario.
+
 **Integración Foundry posterior (27/10/2026):** el usuario creó Azure for Students
 ($100), con regiones permitidas `canadacentral`, `northcentralus`, `denmarkeast`,
 `brazilsouth`, `norwayeast`. GPT-6 Luna, GPT-5.6 Luna y GPT-5.4 nano mostraron
@@ -59,7 +88,7 @@ nuevas peticiones de análisis en pausa, navegación al primer gol sin mostrar g
 futuros, persistencia de idioma/modo, reproducción activa y ancho móvil de 390px.
 La [entrega en borrador](submission-draft.md) contiene pitch, guion de 110s,
 arquitectura y pendientes reales. El cierre oficial es 27/10/2026 a las 23:59 PT,
-equivalente a 28/10/2026 00:59 en Ciudad de México. Aún faltan IA conectada, revisión
+equivalente a 28/10/2026 00:59 en Ciudad de México. En esa etapa faltaban IA conectada, revisión
 de categoría, repo público, publicación verificada, video y envío en el portal.
 
 1. Leer este documento y el [README](../README.md).
@@ -84,7 +113,7 @@ Contexto del hackathon aportado por el usuario:
 
 - **Microsoft Inside the Game Developer Hackathon.**
 - Reto: **The Synthetic Match Insights Engine for Premier League Studio**.
-- Fecha límite comunicada: **27 de octubre de 2026**. Verificar las condiciones oficiales antes de preparar la entrega; esta fecha no se ha comprobado independientemente aquí.
+- Fecha límite oficial comprobada: **27 de octubre de 2026 a las 23:59 PT**, equivalente a **28 de octubre a las 00:59 en Ciudad de México**. Verificar cambios de las reglas antes de entregar.
 - Flujo deseado: **Ingest → Interpret → Explain → Render → Personalize**.
 - Debe funcionar con eventos sintéticos futbolísticamente razonables; el reto no proporciona partidos reales.
 - La visión incluye Microsoft Foundry y componentes desplegados en Azure. El despliegue actual en Vercel no completa esa integración.
@@ -299,8 +328,8 @@ Resultado esperado de esa etapa: un informe reproducible de diferencias y cambio
 Pendientes, sujetos a priorización y aprobación:
 
 - Progresión y entradas al último tercio, distribución por sectores y otras comparaciones tácticas con metodología explícita.
-- Resumen final y experiencias aficionado/analista: ya implementados con plantillas
-  y evidencia por corte; pendiente la capa de explicación generativa de Foundry.
+- Resumen final y experiencias aficionado/analista: existen el respaldo calculado
+  y el nuevo relato generativo por corte; falta evaluar este último con Azure real.
 - Contrato de insights más amplio y tarjetas compactas para transmisión.
 - Interfaz de proveedor y Microsoft Foundry, con plantillas de desarrollo identificadas y validación de las explicaciones.
 - Integración/despliegue en Azure y comprobación de requisitos oficiales del hackathon.
@@ -308,8 +337,9 @@ Pendientes, sujetos a priorización y aprobación:
 
 Visión posterior: adaptador de partidos históricos reales al modelo común, tras revisar cobertura/licencias. Reconocimiento o tracking con YOLO/ByteTrack/BoT-SORT es opcional y posterior a estabilizar lo anterior. No hay visión por computadora implementada.
 
-Existe un adaptador Foundry local para explicaciones de recuperaciones, pendiente
-de prueba real desde nuestra API con credenciales. No se han integrado xT, VAEP,
+Existe un adaptador Foundry con una llamada real de recuperaciones comprobada
+desde Windows. El nuevo relato general/final sigue pendiente de prueba con Azure
+real; se verificó aquí mediante proveedor simulado. No se han integrado xT, VAEP,
 xG, una base de datos, transmisión real ni un simulador físico completo. No
 presentar las plantillas como IA ni los resultados sintéticos como observaciones
 de Premier League.

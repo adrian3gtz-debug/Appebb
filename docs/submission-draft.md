@@ -1,9 +1,9 @@
 # Hackathon submission draft
 
 Status: **working product demo; submission not yet complete**. Model-backed AI
-verification from our backend and public delivery are still pending. Recovery
-explanation code now exists locally with provider mocks; GPT-5 mini was tested
-separately in the Foundry playground. See [integration status](foundry-explanations.md).
+evaluation across scenarios/languages and public delivery are still pending. Recovery
+explanation code has provider mocks; the user also completed one real local call
+through the app and backend to GPT-5 mini. See [integration status](foundry-explanations.md).
 This document describes current
 functionality and must be updated after those steps are verified.
 
@@ -19,7 +19,13 @@ minutes**, submitted through the registered participant's project portal.
 ## Current pitch — factual draft
 
 Football Intelligence Lab turns synthetic football events into inspectable match
-stories. Fans follow the score, goals and a concise summary; analysts explore
+stories. A whole-match AI card explains the current clock and requests a final
+report at full time after activation. Fans receive a concise two-paragraph story;
+analysts receive three paragraphs with passing, control and recent shot activity.
+Each paragraph cites calculated facts. Users request an exact instant or opt into
+updates at goals and time checkpoints. The new general narration still needs a
+real-provider check; the recovery explanation has one verified real local call.
+Fans also follow the score, goals and a calculated summary; analysts explore
 passing, controlled-ball time and recovery sequences behind the same observations.
 Every view follows the replay clock, so rewinding removes future evidence. Final
 recaps link goals to their recorded events. Reproducible synthetic scenarios test
@@ -28,25 +34,26 @@ reference informs a limited generator adjustment, with remaining differences
 reported openly.
 
 Current stack: React, TypeScript, Vite, Tailwind, FastAPI, Pydantic, GitHub and
-Vercel. Narration currently uses deterministic templates. Add a factual description
-of Microsoft/AI services only after the integration has been exercised successfully.
-Do not label the current templates as model-generated AI.
+Vercel, with a Microsoft Foundry Responses adapter for recovery explanations,
+whole-match narration and final reports. Calculated companion summaries use
+deterministic templates. Verify the new general/final prompts with the real model
+before including them as demonstrated functionality in the submitted pitch/video.
 
 ## Proposed demo — target 110 seconds
 
-This version demonstrates the current product. Add the actual AI interaction after
-implementation, shortening other scenes to stay under two minutes.
+Record this version after verifying general/final narration with the real model.
+Prepare responses in advance if needed and keep their evidence clocks visible;
+do not imply latency or successful calls that were not observed.
 
 | Time | Show | Explain |
 | --- | --- | --- |
 | 0–10s | Replay, synthetic-data notice | “A score tells us the result. We want to inspect the events behind the story.” |
-| 10–25s | More high recoveries; seek 19:58, 1×, Play | The card appears after 20:00, once the comparison window closes. |
-| 25–40s | Recovery increase 1→6 and supporting possession | Three later-window recoveries reached shots. Open the evidence instead of inferring tactics. |
-| 40–55s | Switch Casual fan → Analyst | Same facts, with plain-language summary versus passing/control details and recorded actions. Clock stays unchanged. |
-| 55–75s | Circulation vs counterattack at 90:00 | The higher-control team has fewer shots and loses 0–2. Possession alone does not establish superiority. |
-| 75–90s | Final summary; select first goal | Goal evidence navigates to that instant. The later goal disappears from the summary. |
-| 90–100s | Switch EN/ES; briefly show mobile layout | Audience and language are independent preferences. |
-| 100–110s | Architecture and closing | Calculations supply facts; future AI explanations must remain grounded in those facts. |
+| 10–28s | Whole-match AI at a chosen clock, open paragraph references | The model receives score, shots, passing, control and recorded moments only through this cutoff. |
+| 28–43s | Fan/analyst and EN/ES versions already verified | Two concise paragraphs versus three precise paragraphs using the same evidence. |
+| 43–60s | Recovery increase 1→6 and supporting possession | Three later-window recoveries reached shots. Inspect recorded evidence. |
+| 60–82s | Original scenario at 90:00 with the AI final report | Home–away score is 0–2. Compare controlled time and shots without inventing causes. |
+| 82–98s | Select first goal; rewind before a generated cutoff | Later goals and future AI text disappear. |
+| 98–110s | Architecture, mobile and closing | Python computes the facts, Foundry writes cited explanations, React synchronizes the view. |
 
 Record the real local or published application. Use the final verified deployment
 for a submitted recording where possible. Do not present planned features as working.
@@ -60,6 +67,10 @@ flowchart LR
   M --> A[Statistics and recovery analysis at requested second]
   A --> R[Structured recap and goal evidence]
   A --> UI[React replay and evidence views]
+  A --> N[Clock-bounded narration facts]
+  N --> L[Foundry Responses: overview and final report]
+  L --> C[Paragraph references and response checks]
+  C --> UI
   R --> UI
   UI --> F[Casual fan: score and concise story]
   UI --> X[Analyst: counts, control and recorded actions]
@@ -67,7 +78,8 @@ flowchart LR
   V --> G
 ```
 
-No live external feed or deployed model inference is represented in this diagram.
+The inference adapter is implemented locally; production inference remains unverified.
+There is no live external feed.
 Wyscout records support offline research; the public replay consumes synthetic data.
 
 ## Delivery checklist
@@ -77,7 +89,9 @@ Wyscout records support offline research; the public replay consumes synthetic d
 - [x] Historical reference comparison with limitations.
 - [x] Casual fan/analyst modes and EN/ES.
 - [x] Time-bounded summary, final recap and clickable goal evidence.
-- [ ] Model-backed explanations grounded in the structured facts.
+- [x] General/final AI adapter, paragraph citations, audience instructions and optional checkpoint updates implemented and tested with provider mocks.
+- [x] One real local recovery explanation matches its calculated facts.
+- [ ] Verify new general/final narration with real Azure in EN/ES and both audiences.
 - [ ] Confirm applicable category and actual Microsoft technology integration.
 - [ ] Update pitch/architecture to match that integration and its limits.
 - [ ] Commit/push approved changes; verify both frontend/API deployments.

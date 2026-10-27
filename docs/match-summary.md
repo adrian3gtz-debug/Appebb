@@ -2,8 +2,9 @@
 
 The replay now offers **Casual fan / Analyst** modes in EN/ES. It also produces a
 time-bounded match summary, which becomes a final recap only at 90:00. This stage
-uses deterministic metrics and text templates. Foundry/model integration remains
-a separate pending delivery task.
+uses deterministic metrics and text templates as a reliable companion to the
+new [whole-match AI narrative and final report](match-narrative.md). The AI card
+has its own requests, cutoff, citations, audience instructions and error state.
 
 ## Same facts, different experiences
 

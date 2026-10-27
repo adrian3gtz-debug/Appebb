@@ -1,17 +1,25 @@
 # Explicaciones de recuperaciones con Microsoft Foundry
 
+El mismo proveedor también sirve al [relato general y la crónica final](match-narrative.md),
+con idénticas variables privadas. Ambos endpoints comparten caché, concurrencia y
+límite de intentos. Esta guía describe específicamente la explicación de recuperaciones.
+
 ## Alcance
 
 `POST /api/matches/demo/explanation` permite solicitar una explicación EN/ES,
 Aficionado/Analista, de un insight de recuperaciones que ya detectó Python.
 El botón es explícito; el polling de análisis de 500 ms no llama al modelo.
-Los resúmenes del partido y el resumen final continúan usando reglas. No afirmar
-que toda la narración o la integración de IA están verificadas en producción.
+El resumen calculado por reglas sigue disponible; el nuevo relato con IA tiene
+su endpoint y controles propios. La inferencia en producción no está verificada.
 
 El usuario creó `football-insights`, GPT-5 mini `2025-08-07`, Global Standard,
 en un nuevo recurso de Foundry en North Central US. Canada Central no admite
 esta combinación. Se comprobó respuesta en el playground con un caso 1→6 y
-3 posesiones con remate. Eso no prueba todavía la conexión de nuestra API.
+3 posesiones con remate. Posteriormente el usuario obtuvo una explicación desde
+la app mediante su backend local y Foundry. El usuario confirmó el escenario
+«Recuperaciones sin remate»: 1→6 recuperaciones y 0 secuencias con remate en la
+captura coinciden con la evidencia calculada a 20:00. Esa llamada
+real no sustituye una evaluación de todos los escenarios, idiomas y audiencias.
 
 ## Contrato y datos
 
