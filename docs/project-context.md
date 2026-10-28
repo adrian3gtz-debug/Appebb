@@ -7,6 +7,49 @@ Documento de entrada para retomar el proyecto en otra conversación. Resume deci
 
 ## 1. Cómo retomar
 
+**Estado vigente: cambio de proveedor autorizado (28/10 UTC):** el último código
+publicado es `e300090` (schema Azure compatible, diagnóstico seguro y favicon).
+La llamada pública posterior devolvió `provider_status: 401`. El portal confirma
+suscripción Azure deshabilitada por alerta de actividad sospechosa; la causa de
+la alerta no se conoce. Registrar `Microsoft.ResourceHealth` no la reactiva.
+El usuario pidió implementar otra API. Se añadió selección explícita
+`AI_PROVIDER=groq`, Groq Chat Completions y `openai/gpt-oss-120b`, conservando Azure.
+Ambos endpoints comparten controles, hechos y límites; la interfaz identifica el
+proveedor real. Ver [configuración y estado](ai-providers.md). Pasaron 230 pruebas
+backend, 19 frontend y build con proveedor simulado; Chromium confirmó etiquetas
+Groq, modos/idiomas, final, retroceso, errores y móvil. El usuario confirmó que
+ya tiene clave y realizó un despliegue, y autorizó expresamente commit/push de
+este cambio. Ese despliegue previo aún no contenía el adaptador nuevo. Verificar
+los despliegues posteriores de ambos proyectos, las tres variables privadas en
+Production del API y una llamada real. No hay clave Groq en este entorno.
+La entrega debe describir la integración real; Groq no equivale a uso de Foundry.
+
+Las entradas siguientes son históricas: los estados antiguos de 503, clave solo
+local, schema pendiente y favicon sin subir quedaron superados por lo anterior.
+
+**Incidente público posterior:** el usuario configuró las tres variables de Azure
+en Production del API de Vercel y redeplegó. Ahora `/demo/narrative` responde 502
+en `varied`, segundo 0, ES, aficionado; Response es «AI provider unavailable;
+deterministic evidence remains available». Eso identifica un error HTTP del
+proveedor, no la rama de rechazo de narración. Se encontró que el esquema propio
+enviaba `minItems`/`maxItems`, no admitidos por Azure según documentación oficial.
+Corrección local: retirarlos del esquema enviado conservando límites en Python,
+versión interna de caché nueva y errores seguros con código/estado de proveedor.
+También se corrigió el falso positivo de «Final-third» como marcador de final.
+Falta subir esta corrección con autorización y probar el proveedor real de nuevo.
+El favicon verde con F blanca está preparado localmente, pendiente de subida.
+
+**Preparación de entrega posterior:** el usuario está fuera de casa y no puede
+autorizar Vercel ni configurar ahora la clave. La última captura pública muestra
+503 en `/demo/narrative`. No se ha cambiado la configuración de producción ni
+hecho redeploy desde aquí. Se sugirió Vercel, pero no se confirmó su conexión.
+El código está subido en `f7debb8`; GitHub confirmó de nuevo que el repo sigue
+privado y `main` es la rama predeterminada. Se preparó
+[paquete de entrega](submission-pack.md): texto de portal en inglés, categoría
+sugerida, guion de voz de 110 s, instrucciones para jueces y pendientes.
+El paquete es local y no implica publicación ni envío. Aún faltan credenciales
+en producción, verificación de IA general/final real, repo público, video y envío.
+
 **Ampliación autorizada posterior:** ante el alcance limitado de recuperaciones,
 el usuario pidió implementar relato del estado general, crónica final y
 personalización Aficionado/Analista ES/EN. Ya existe código local para

@@ -1,5 +1,14 @@
 # Football Intelligence Lab
 
+### AI provider selection
+
+The backend supports **Groq / GPT-OSS 120B** and the existing Azure adapter.
+Set `AI_PROVIDER=groq`, a private `GROQ_API_KEY`, and
+`GROQ_MODEL=openai/gpt-oss-120b` in the API project's Vercel Production environment,
+then redeploy the updated backend and frontend. See [provider setup and verification](docs/ai-providers.md).
+Azure's subscription is currently suspended; real Groq inference remains pending.
+The UI identifies the provider that generated each response. No automatic fallback is used.
+
 ### Whole-match AI story and final report
 
 **What is happening in the match?** explains the current replay cutoff in every
@@ -15,15 +24,14 @@ and statistics remain available if the provider fails. This is synthetic replay,
 not a live external data feed.
 
 The new general/final narration is tested with a simulated provider and a real
-local data API. Azure verification of these new prompts remains pending on the
-user's computer; the earlier recovery explanation has one verified real local call.
+local data API. Real-provider verification of these new prompts remains pending; the earlier recovery explanation has one verified real local call.
 See [whole-match narration, setup and limits](docs/match-narrative.md).
 
-### Microsoft Foundry recovery explanations (local integration)
+### Recovery explanations with AI
 
 Closed recovery insights offer an explicit **Explain with AI** action in English
 or Spanish, for fans or analysts. The backend builds the evidence and calls an
-Azure OpenAI Responses deployment; regular replay polling never calls the model.
+explicitly selected Groq or Azure deployment; regular replay polling never calls the model.
 The calculated recap remains available alongside the new AI report. Provider tests use mocks; the user
 also verified one real local backend call. Broader model evaluation and production
 inference verification remain pending.
@@ -34,7 +42,7 @@ From match events to explainable football intelligence.
 
 For project status, collaboration preferences, research decisions and the proposed next stage, start with [the project context and handoff (Spanish)](docs/project-context.md).
 
-This is the foundation for Match Story Engine. It contains a React frontend, FastAPI endpoints, validated match models, possession-time calculation, browser playback of reproducible synthetic fixtures, and recovery-to-attack analysis with inspectable evidence. An optional Foundry adapter requires private backend configuration; one real local inference call has been verified, with broader evaluation still pending.
+This is the foundation for Match Story Engine. It contains a React frontend, FastAPI endpoints, validated match models, possession-time calculation, browser playback of reproducible synthetic fixtures, and recovery-to-attack analysis with inspectable evidence. Optional Groq and Azure adapters require private backend configuration; one real local inference call has been verified, with broader evaluation still pending.
 
 ## Requirements
 

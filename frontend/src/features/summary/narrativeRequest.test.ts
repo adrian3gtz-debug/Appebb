@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { Match } from '../../types/match'
 import type { NarrativeRequest } from '../../types/narrative'
 import { fetchNarrative, narrativeCheckpoint, parseNarrative } from './narrativeRequest'
+import { providerLabel } from '../../types/ai'
+import { narrativeCopy } from './narrativeCopy'
 
 const request: NarrativeRequest = { scenario: 'original', second: 1200, language: 'es', audience: 'fan' }
 const response = {
@@ -15,6 +17,15 @@ const response = {
 afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers() })
 
 describe('narrative evidence boundary', () => {
+  it('accepts Groq and labels the provider that actually generated the response', () => {
+    for (const generation of ['groq', 'azure_openai'] as const) {
+      const parsed = parseNarrative({ ...response, generation }, request, 'match')
+      const note = narrativeCopy.es.note(providerLabel(parsed.generation))
+      expect(note).toContain(generation === 'groq' ? 'Groq' : 'Microsoft Foundry')
+      if (generation === 'groq') expect(note).not.toContain('Microsoft Foundry')
+    }
+    expect(() => parseNarrative({ ...response, generation: 'unknown' }, request, 'match')).toThrow()
+  })
   it('accepts the requested context and rejects a final/future or unrelated response', () => {
     expect(parseNarrative(response, request, 'match').as_of_second).toBe(1200)
     for (const mutation of [{ match_id: 'other' }, { as_of_second: 5400 }, { phase: 'full_time' }, { language: 'en' }, { audience: 'analyst' }, { generation: 'rules' }]) {

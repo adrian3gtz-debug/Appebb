@@ -37,7 +37,7 @@ class GeneratedNarrative(BaseModel):
 
 class NarrativeResponse(GeneratedNarrative):
     source: Literal["synthetic"] = "synthetic"
-    generation: Literal["azure_openai"] = "azure_openai"
+    generation: Literal["azure_openai", "groq"] = "azure_openai"
     methodology_version: Literal["narrative-v1"] = "narrative-v1"
     match_id: str
     as_of_second: int

@@ -70,7 +70,11 @@ Las longitudes y cantidades siguen verificándose con Pydantic y reglas locales.
 
 ## Proveedor y coste
 
-Reutiliza la misma configuración privada y Responses v1 de
+La selección vigente se explica en [proveedores de IA](ai-providers.md).
+Groq utiliza Chat Completions con JSON Schema estricto y 4,096 tokens de
+completado. Ambos adaptadores comparten hechos, controles y límites.
+
+En Azure reutiliza la misma configuración privada y Responses v1 de
 [Foundry](foundry-explanations.md): sin herramientas ni historial, `store=false`,
 razonamiento mínimo. El relato permite hasta 1,800 tokens de salida, incluyendo
 razonamiento. Hay un plazo total de 30 s en backend y de 35 s en el navegador;
@@ -101,7 +105,8 @@ Con ambos servidores funcionando y la clave configurada solo en `backend/.env`:
 Aquí se verificó la integración con proveedor simulado y API real para datos,
 215 pruebas backend, 18 frontend, build y Chromium. La llamada real observada antes de esta
 etapa fue la de recuperaciones sin remate. **El nuevo relato general/final aún debe
-evaluarse con Azure desde la computadora del usuario**, donde está la clave.
+evaluarse con un proveedor real**. Azure quedó suspendido; Groq está
+implementado y probado con transporte simulado, pendiente de clave y despliegue.
 
 ## Archivos principales
 

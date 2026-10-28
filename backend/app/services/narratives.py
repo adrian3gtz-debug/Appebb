@@ -89,5 +89,5 @@ async def narrate(match: Match, request: NarrativeRequest) -> NarrativeResponse:
     result = await generate_checked(payload, request.language, request.audience,
         version="narrative-v2", validate=lambda raw: validate_narrative(raw, facts, request),
         instructions=instructions, schema=schema, max_output_tokens=1800)
-    return NarrativeResponse(**result.model_dump(), match_id=match.id, as_of_second=request.second,
+    return NarrativeResponse(**result.value.model_dump(), generation=result.generation, match_id=match.id, as_of_second=request.second,
         phase=phase, language=request.language, audience=request.audience, evidence=facts)

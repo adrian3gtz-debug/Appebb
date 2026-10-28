@@ -21,6 +21,7 @@ def isolate(monkeypatch):
     provider._cache.clear()
     provider._calls.clear()
     monkeypatch.setattr(provider, "_busy", False)
+    monkeypatch.setenv("AI_PROVIDER", "azure_openai")
     monkeypatch.setenv("AZURE_OPENAI_RESPONSES_ENDPOINT", "https://example.services.ai.azure.com/openai/v1/responses")
     monkeypatch.setenv("AZURE_OPENAI_DEPLOYMENT", "football-insights")
     monkeypatch.setenv("AZURE_OPENAI_API_KEY", "unit-test-placeholder")

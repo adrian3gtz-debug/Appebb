@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { providerLabel } from '../../types/ai'
 import type { Language } from '../../i18n'
 import type { Match } from '../../types/match'
 import type { DemoScenario } from '../../types/recoveries'
@@ -99,7 +100,7 @@ function NarrativeView({ match, scenario, second, language, audience, onSeek, au
         </details>
       </div>)}
       {visible.as_of_second < cutoff && <p className="mt-3 text-xs text-[#53675b]">{c.snapshot}</p>}
-      <p className="mt-3 max-w-3xl text-xs leading-5 text-[#53675b]">{c.note}</p>
+      <p className="mt-3 max-w-3xl text-xs leading-5 text-[#53675b]">{c.note(providerLabel(visible.generation))}</p>
     </div>}
   </section>
 }

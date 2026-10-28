@@ -1,5 +1,13 @@
 # Hackathon submission draft
 
+Ready-to-edit portal text, voice script, judge instructions and verified blockers:
+[submission pack](submission-pack.md). Latest published code before the provider switch:
+`e300090`. The repository remains private. Azure inference returned 401; the user
+confirmed the subscription is suspended. The Groq alternative is implemented and
+mock-tested. The user has a private key and authorized publication of the change.
+The earlier deployment predates this adapter; verify subsequent builds and real
+production inference before claiming that the switch works publicly.
+
 Status: **working product demo; submission not yet complete**. Model-backed AI
 evaluation across scenarios/languages and public delivery are still pending. Recovery
 explanation code has provider mocks; the user also completed one real local call
@@ -34,7 +42,7 @@ reference informs a limited generator adjustment, with remaining differences
 reported openly.
 
 Current stack: React, TypeScript, Vite, Tailwind, FastAPI, Pydantic, GitHub and
-Vercel, with a Microsoft Foundry Responses adapter for recovery explanations,
+Vercel, with selectable Groq Chat Completions and Microsoft Foundry Responses adapters for recovery explanations,
 whole-match narration and final reports. Calculated companion summaries use
 deterministic templates. Verify the new general/final prompts with the real model
 before including them as demonstrated functionality in the submitted pitch/video.
@@ -53,7 +61,7 @@ do not imply latency or successful calls that were not observed.
 | 43–60s | Recovery increase 1→6 and supporting possession | Three later-window recoveries reached shots. Inspect recorded evidence. |
 | 60–82s | Original scenario at 90:00 with the AI final report | Home–away score is 0–2. Compare controlled time and shots without inventing causes. |
 | 82–98s | Select first goal; rewind before a generated cutoff | Later goals and future AI text disappear. |
-| 98–110s | Architecture, mobile and closing | Python computes the facts, Foundry writes cited explanations, React synchronizes the view. |
+| 98–110s | Architecture, mobile and closing | Python computes the facts, the selected provider writes cited explanations, React synchronizes the view. |
 
 Record the real local or published application. Use the final verified deployment
 for a submitted recording where possible. Do not present planned features as working.
@@ -68,7 +76,7 @@ flowchart LR
   A --> R[Structured recap and goal evidence]
   A --> UI[React replay and evidence views]
   A --> N[Clock-bounded narration facts]
-  N --> L[Foundry Responses: overview and final report]
+  N --> L[Selected Groq or Azure provider: overview and final report]
   L --> C[Paragraph references and response checks]
   C --> UI
   R --> UI
@@ -91,10 +99,11 @@ Wyscout records support offline research; the public replay consumes synthetic d
 - [x] Time-bounded summary, final recap and clickable goal evidence.
 - [x] General/final AI adapter, paragraph citations, audience instructions and optional checkpoint updates implemented and tested with provider mocks.
 - [x] One real local recovery explanation matches its calculated facts.
-- [ ] Verify new general/final narration with real Azure in EN/ES and both audiences.
+- [ ] Verify new general/final narration with the selected real provider in EN/ES and both audiences.
 - [ ] Confirm applicable category and actual Microsoft technology integration.
 - [ ] Update pitch/architecture to match that integration and its limits.
-- [ ] Commit/push approved changes; verify both frontend/API deployments.
+- [x] Commit/push implementation through `e300090` (provider switch pending) to `phase1-foundation`.
+- [ ] Verify both frontend/API deployments and working production inference.
 - [ ] Public repository suitable for judging, with attribution and clear setup steps.
 - [ ] Working public demo verified at the submitted URLs.
 - [ ] Record/upload a public demo video shorter than two minutes.

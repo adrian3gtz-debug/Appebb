@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { isAIProvider, providerLabel } from '../../types/ai'
+import type { AIProvider } from '../../types/ai'
 import type { Language } from '../../i18n'
 import type { DemoScenario, RecoveryInsight } from '../../types/recoveries'
 import { apiBaseUrl } from '../../services/api'
@@ -13,15 +15,16 @@ interface Props {
 const copy = {
   es: { title: 'Explicación con IA', button: 'Explicar con IA', loading: 'Generando explicación…',
     error: 'La explicación con IA no está disponible. Puedes consultar la evidencia y el texto calculado del insight.',
-    evidence: 'Revisar evidencia', note: 'Generada con Microsoft Foundry a partir de este insight sintético. Contrasta la redacción con la evidencia.' },
+    evidence: 'Revisar evidencia', note: (provider: string) => `Generada con ${provider} a partir de este insight sintético. Contrasta la redacción con la evidencia.` },
   en: { title: 'AI explanation', button: 'Explain with AI', loading: 'Generating explanation…',
     error: 'The AI explanation is unavailable. You can still inspect the evidence and the insight’s calculated text.',
-    evidence: 'Inspect evidence', note: 'Generated with Microsoft Foundry from this synthetic insight. Check the wording against the evidence.' },
+    evidence: 'Inspect evidence', note: (provider: string) => `Generated with ${provider} from this synthetic insight. Check the wording against the evidence.` },
 }
 
 export function AiExplanation({ scenario, matchId, insight, language, audience, onSeek }: Props) {
   const c = copy[language]
-  const [text, setText] = useState<string | null>(null)
+  const [generated, setGenerated] = useState<{ text: string; generation: AIProvider } | null>(null)
+  const text = generated?.text
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
   const controller = useRef<AbortController | null>(null)
@@ -46,8 +49,8 @@ export function AiExplanation({ scenario, matchId, insight, language, audience, 
         || !('evidence_second' in result) || result.evidence_second !== insight.detected_second
         || !('language' in result) || result.language !== language
         || !('audience' in result) || result.audience !== audience
-        || !('generation' in result) || result.generation !== 'azure_openai') throw new Error('Mismatched explanation')
-      if (!pending.signal.aborted) setText(result.text)
+        || !('generation' in result) || !isAIProvider(result.generation)) throw new Error('Mismatched explanation')
+      if (!pending.signal.aborted) setGenerated({ text: result.text, generation: result.generation })
     } catch {
       if (!pending.signal.aborted) setFailed(true)
     } finally {
@@ -66,6 +69,6 @@ export function AiExplanation({ scenario, matchId, insight, language, audience, 
       {!text && <button type="button" disabled={busy} onClick={() => { void generate() }} className="min-h-11 rounded-lg bg-[#205c41] px-4 text-sm font-semibold text-white disabled:opacity-50">{c.button}</button>}
       <button type="button" onClick={() => onSeek(insight.detected_second)} className="min-h-11 text-sm font-medium underline">{c.evidence}</button>
     </div>
-    {text && <p className="mt-3 text-xs leading-5 text-[#53675b]">{c.note}</p>}
+    {generated && <p className="mt-3 text-xs leading-5 text-[#53675b]">{c.note(providerLabel(generated.generation))}</p>}
   </section>
 }

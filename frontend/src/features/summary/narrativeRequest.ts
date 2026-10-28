@@ -1,3 +1,4 @@
+import { isAIProvider } from '../../types/ai'
 import type { Match } from '../../types/match'
 import type { MatchNarrativeResponse, NarrativeRequest } from '../../types/narrative'
 import { apiBaseUrl } from '../../services/api'
@@ -18,7 +19,7 @@ function object(value: unknown): value is Record<string, unknown> {
 }
 
 export function parseNarrative(value: unknown, request: NarrativeRequest, matchId: string): MatchNarrativeResponse {
-  if (!object(value) || value.source !== 'synthetic' || value.generation !== 'azure_openai'
+  if (!object(value) || value.source !== 'synthetic' || !isAIProvider(value.generation)
     || value.methodology_version !== 'narrative-v1' || value.match_id !== matchId
     || value.as_of_second !== request.second || value.language !== request.language || value.audience !== request.audience
     || value.phase !== (request.second === 5400 ? 'full_time' : 'in_progress')

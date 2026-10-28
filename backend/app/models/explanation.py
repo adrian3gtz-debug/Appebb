@@ -17,7 +17,7 @@ class ExplanationRequest(BaseModel):
 
 
 class ExplanationResponse(BaseModel):
-    generation: Literal["azure_openai"] = "azure_openai"
+    generation: Literal["azure_openai", "groq"] = "azure_openai"
     match_id: str
     insight_id: str
     evidence_second: int

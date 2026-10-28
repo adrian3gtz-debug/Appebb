@@ -1,5 +1,10 @@
 # Explicaciones de recuperaciones con Microsoft Foundry
 
+**Actualización:** Azure está suspendido por una alerta de la suscripción. Ya existe
+un adaptador alternativo de Groq para ambos endpoints; consultar [selección de
+proveedores](ai-providers.md). Esta guía conserva los detalles del adaptador Azure;
+las pruebas reales históricas descritas abajo no certifican su disponibilidad actual.
+
 El mismo proveedor también sirve al [relato general y la crónica final](match-narrative.md),
 con idénticas variables privadas. Ambos endpoints comparten caché, concurrencia y
 límite de intentos. Esta guía describe específicamente la explicación de recuperaciones.

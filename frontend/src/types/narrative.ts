@@ -1,3 +1,4 @@
+import type { AIProvider } from './ai'
 import type { Language } from '../i18n'
 import type { Audience } from '../features/summary/audience'
 import type { DemoScenario } from './recoveries'
@@ -19,7 +20,7 @@ export interface NarrativeFact {
 
 export interface MatchNarrativeResponse {
   source: 'synthetic'
-  generation: 'azure_openai'
+  generation: AIProvider
   methodology_version: 'narrative-v1'
   match_id: string
   as_of_second: number
