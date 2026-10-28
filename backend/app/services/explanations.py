@@ -5,6 +5,7 @@ from collections.abc import Callable
 import asyncio
 import hashlib
 import json
+import logging
 import os
 import re
 from time import monotonic
@@ -17,6 +18,8 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.analytics.recoveries import analyze_recoveries
 from app.models.explanation import ExplanationRequest, ExplanationResponse
 from app.models.match import Match
+
+logger = logging.getLogger(__name__)
 
 
 class ModelText(BaseModel):
@@ -147,9 +150,20 @@ async def generate_checked(facts: dict, language: str, audience: str, *, version
         result = validate(raw)
     except httpx.HTTPStatusError as error:
         status = 429 if error.response.status_code == 429 else 502
-        raise HTTPException(status, "AI provider unavailable; deterministic evidence remains available") from None
-    except (httpx.RequestError, TimeoutError, ValueError, KeyError, TypeError):
-        raise HTTPException(502, "AI response unavailable or rejected; deterministic evidence remains available") from None
+        # Do not expose provider bodies, URLs, request headers or exception strings.
+        logger.warning("AI failure category=provider_http_error provider_status=%d", error.response.status_code)
+        raise HTTPException(status, {"code": "provider_http_error", "provider_status": error.response.status_code,
+            "message": "AI provider rejected the request; deterministic evidence remains available"}) from None
+    except (httpx.TimeoutException, TimeoutError):
+        logger.warning("AI failure category=provider_timeout")
+        raise HTTPException(502, {"code": "provider_timeout", "message": "AI provider timed out"}) from None
+    except httpx.RequestError:
+        logger.warning("AI failure category=provider_connection_error")
+        raise HTTPException(502, {"code": "provider_connection_error", "message": "AI provider could not be reached"}) from None
+    except (ValueError, KeyError, TypeError):
+        logger.warning("AI failure category=response_rejected")
+        raise HTTPException(502, {"code": "response_rejected",
+            "message": "AI response incomplete or rejected by evidence validation"}) from None
     finally:
         _busy = False
     _cache[cache_key] = result

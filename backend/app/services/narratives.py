@@ -30,7 +30,7 @@ def validate_narrative(raw: str, facts: list[NarrativeFact], request: NarrativeR
             raise ValueError("Number absent from cited facts")
         if re.search(r"presi[oó]n|press(?:ing|ure)?|t[aá]ctic|tactic|xg\b|formation|formaci[oó]n|coach|entrenador|caus|provoc|debido|because|domin|merec|deserv|superior|https?://", text, re.I):
             raise ValueError("Unsupported interpretation")
-        if request.second < 5400 and re.search(r"(?:^final\b|\b(?:full[- ]time|final (?:score|result)|resultado final|marcador final|won|wins|gan[oó]|ganaron|termin[oó] el partido)\b)", text, re.I):
+        if request.second < 5400 and re.search(r"(?:^final\b(?![- ]third)|\b(?:full[- ]time|final (?:score|result)|resultado final|marcador final|won|wins|gan[oó]|ganaron|termin[oó] el partido)\b)", text, re.I):
             raise ValueError("Premature final result")
     check(result.headline, ["score"])
     score = lookup["score"].values
@@ -52,7 +52,6 @@ def validate_narrative(raw: str, facts: list[NarrativeFact], request: NarrativeR
 async def narrate(match: Match, request: NarrativeRequest) -> NarrativeResponse:
     facts = build_narrative_facts(match, request.second)
     phase = "full_time" if request.second == 5400 else "in_progress"
-    paragraphs = 2 if request.audience == "fan" else 3
     audience = ("Use two short paragraphs, at most 100 words total. Tell an accessible story: score and shots, "
                 "then a useful contrast or recent activity. Avoid statistical jargon.") if request.audience == "fan" else (
                 "Use three precise paragraphs, at most 180 words total. Include score and shot totals; "
@@ -76,9 +75,10 @@ async def narrate(match: Match, request: NarrativeRequest) -> NarrativeResponse:
     schema = {
         "type": "object", "properties": {
             "headline": {"type": "string"},
-            "paragraphs": {"type": "array", "minItems": paragraphs, "maxItems": paragraphs, "items": {
+            # Azure's schema subset excludes minItems/maxItems. Enforce lengths in Python.
+            "paragraphs": {"type": "array", "items": {
                 "type": "object", "properties": {"text": {"type": "string"}, "fact_ids": {
-                    "type": "array", "minItems": 1, "maxItems": 8,
+                    "type": "array",
                     "items": {"type": "string", "enum": [f.id for f in facts]},
                 }}, "required": ["text", "fact_ids"], "additionalProperties": False,
             }},
@@ -87,7 +87,7 @@ async def narrate(match: Match, request: NarrativeRequest) -> NarrativeResponse:
     payload = {"source": "synthetic", "phase": phase, "clock": f"{request.second // 60:02}:{request.second % 60:02}",
         "facts": [{"id": f.id, "statement": f.statements[request.language], "values": f.values} for f in facts]}
     result = await generate_checked(payload, request.language, request.audience,
-        version="narrative-v1", validate=lambda raw: validate_narrative(raw, facts, request),
+        version="narrative-v2", validate=lambda raw: validate_narrative(raw, facts, request),
         instructions=instructions, schema=schema, max_output_tokens=1800)
     return NarrativeResponse(**result.model_dump(), match_id=match.id, as_of_second=request.second,
         phase=phase, language=request.language, audience=request.audience, evidence=facts)

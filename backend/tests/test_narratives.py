@@ -122,6 +122,13 @@ def test_full_provider_contract_caching_personas_and_rewind(monkeypatch):
     def handle(req):
         body = json.loads(req.content)
         calls.append(body)
+        # Model Azure's documented schema rejection, rather than accepting any schema.
+        def unsupported(node):
+            if isinstance(node, dict):
+                return bool({"minItems", "maxItems", "minLength", "maxLength", "minimum", "maximum"} & node.keys()) or any(unsupported(v) for v in node.values())
+            return isinstance(node, list) and any(unsupported(v) for v in node)
+        if unsupported(body["text"]["format"]["schema"]):
+            return httpx.Response(400, json={"error": {"code": "invalid_json_schema"}})
         payload = json.loads(body["input"])
         language = "es" if "Language es." in body["instructions"] else "en"
         req_model = request(second=int(payload["clock"][:2]) * 60 + int(payload["clock"][-2:]),
@@ -146,6 +153,14 @@ def test_full_provider_contract_caching_personas_and_rewind(monkeypatch):
             assert len(goals) < 2
     assert len(calls) == 3
     assert all(b["store"] is False and "tools" not in b for b in calls)
+
+
+def test_final_third_sentence_is_not_mistaken_for_full_time():
+    req = request(scenario="higher_recoveries", second=1200, language="en")
+    facts = build_narrative_facts(load_scenario(req.scenario), req.second)
+    raw = generated(facts, req)
+    raw["paragraphs"][1] = {"text": "Final-third recoveries rose from 1 to 6.", "fact_ids": ["recoveries_home"]}
+    assert narratives.validate_narrative(json.dumps(raw), facts, req)
 
 
 def test_unconfigured_service_and_shared_request_limit(monkeypatch):

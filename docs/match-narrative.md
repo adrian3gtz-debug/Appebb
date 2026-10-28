@@ -64,6 +64,10 @@ entrenador. **Los controles léxicos y numéricos no prueban fidelidad semántic
 una cifra conocida puede atribuirse incorrectamente. La UI mantiene las referencias
 por párrafo para contrastarlas y el resumen calculado como respaldo.
 
+El esquema enviado a Azure omite `minItems` y `maxItems`, que no admite su
+[subconjunto de JSON Schema](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/structured-outputs#unsupported-type-specific-keywords).
+Las longitudes y cantidades siguen verificándose con Pydantic y reglas locales.
+
 ## Proveedor y coste
 
 Reutiliza la misma configuración privada y Responses v1 de
@@ -71,6 +75,9 @@ Reutiliza la misma configuración privada y Responses v1 de
 razonamiento mínimo. El relato permite hasta 1,800 tokens de salida, incluyendo
 razonamiento. Hay un plazo total de 30 s en backend y de 35 s en el navegador;
 un error permite reintentar manualmente y no oculta estadísticas.
+Los errores distinguen `provider_http_error` (incluye el estado HTTP de Azure),
+`provider_timeout`, `provider_connection_error` y `response_rejected`. Los registros
+no imprimen excepciones, cuerpos de Azure, encabezados ni credenciales.
 
 Recuperaciones y relato comparten caché LRU de 96 resultados y límite de seis
 intentos/minuto con una llamada simultánea **por worker**. La caché distingue

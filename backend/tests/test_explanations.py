@@ -128,7 +128,7 @@ def test_http_adapter_uses_responses_contract_and_reads_assistant_text(monkeypat
 
 
 @pytest.mark.parametrize("failure,expected", [("malformed", 502), ("timeout", 502), ("upstream", 502), ("quota", 429)])
-def test_provider_failures_are_sanitized_and_release_capacity(monkeypatch, failure, expected):
+def test_provider_failures_are_sanitized_and_release_capacity(monkeypatch, caplog, failure, expected):
     async def fake(*args):
         if failure == "malformed":
             return "invalid-json"
@@ -142,6 +142,11 @@ def test_provider_failures_are_sanitized_and_release_capacity(monkeypatch, failu
     response = TestClient(app).post("/api/matches/demo/explanation", json=request.model_dump())
     assert response.status_code == expected
     assert "secret" not in response.text and "unit-test" not in response.text
+    codes = {"malformed": "response_rejected", "timeout": "provider_timeout", "upstream": "provider_http_error", "quota": "provider_http_error"}
+    assert response.json()["detail"]["code"] == codes[failure]
+    if failure in ("upstream", "quota"):
+        assert response.json()["detail"]["provider_status"] == (429 if failure == "quota" else 401)
+    assert "secret error detail" not in caplog.text and "unit-test-placeholder" not in caplog.text
     assert service._busy is False and not service._cache
 
 
