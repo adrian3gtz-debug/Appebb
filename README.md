@@ -1,5 +1,26 @@
 # Football Intelligence Lab
 
+**A football analysis interface built with React and TypeScript, backed by a Python API.** It replays reproducible synthetic matches and lets visitors explore match statistics, recovery-to-attack evidence, and optional AI-assisted explanations. The data is synthetic and the project is exploratory; it is not a live professional match feed.
+
+**[Try the demo](https://futbolify-psi.vercel.app)** · **[Frontend source](frontend/)** · **[Backend source](backend/)** · **[Methods and limitations](docs/project-context.md)**
+
+### What to try
+
+1. Open a match scenario and start or seek the replay.
+2. Switch between fan and analyst views, then inspect the match statistics.
+3. Compare recovery-to-attack sequences and expand the evidence behind an insight.
+4. Switch between English and Spanish. AI narration requires a configured provider; the calculated analysis works without one.
+
+### Stack and scope
+
+- **Frontend:** React, TypeScript, Vite and Tailwind CSS.
+- **Backend:** FastAPI and Pydantic; synthetic fixtures and derived match analysis.
+- **Status:** Working replay and deterministic analysis. Some AI-provider checks and model calibration remain in progress; the sections below document exact boundaries.
+
+For setup, run instructions, design decisions and validation details, continue below.
+
+---
+
 ### AI provider selection
 
 The backend supports **Groq / GPT-OSS 120B** and the existing Azure adapter.
